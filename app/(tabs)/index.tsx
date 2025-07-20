@@ -35,7 +35,7 @@ export default function VehiclesScreen() {
   const handleVehiclePress = (vehicle: Vehicle) => {
     router.push({
       pathname: '/chat/[id]',
-      params: { 
+      params: {
         id: vehicle.id,
         make: vehicle.make,
         model: vehicle.model,
@@ -45,14 +45,14 @@ export default function VehiclesScreen() {
   };
 
   const totalVehicles = vehicles.length;
-  const avgMileage = vehicles.reduce((sum, v) => sum + (v.mileage || 0), 0) / totalVehicles;
+  const avgMileage = totalVehicles > 0 ? vehicles.reduce((sum, v) => sum + (v.mileage || 0), 0) / totalVehicles : 0;
   const pendingMaintenance = 3;
   const activeCodes = 2;
 
   return (
     <View style={styles.container}>
       <AnimatedBackground />
-      
+
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.title}>GARAGE</Text>
@@ -94,12 +94,12 @@ export default function VehiclesScreen() {
             trend="up"
           />
         </View>
-        
+
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>MY RIDES</Text>
           <View style={styles.accentLine} />
         </View>
-        
+
         {vehicles.map((vehicle) => (
           <ModernVehicleCard
             key={vehicle.id}
@@ -111,7 +111,7 @@ export default function VehiclesScreen() {
             onPress={() => handleVehiclePress(vehicle)}
           />
         ))}
-        
+
         {vehicles.length === 0 && (
           <View style={styles.emptyState}>
             <Ionicons name="car-sport-outline" size={64} color="rgba(255,140,0,0.5)" />
@@ -119,10 +119,10 @@ export default function VehiclesScreen() {
             <Text style={styles.emptySubtext}>Add your ride to get started</Text>
           </View>
         )}
-        
+
         <View style={{ height: 100 }} />
       </ScrollView>
-      
+
       <TouchableOpacity
         style={styles.fab}
         onPress={() => setShowAddModal(true)}
@@ -134,7 +134,7 @@ export default function VehiclesScreen() {
           <Ionicons name="add" size={32} color="white" />
         </LinearGradient>
       </TouchableOpacity>
-      
+
       <AddVehicleModal
         visible={showAddModal}
         onClose={() => setShowAddModal(false)}

@@ -13,5 +13,9 @@ module.exports = defineConfig([
       '@typescript-eslint/no-non-null-assertion': 'off',
       'react/no-unescaped-entities': 'off',
     },
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'module',
+    },
   },
 ]);

@@ -50,7 +50,7 @@ export default function AnimatedBackground() {
     animation.start();
 
     return () => animation.stop();
-  }, []);
+  }, [moveAnim, scaleAnim, rotateAnim]);
 
   const translateX = moveAnim.interpolate({
     inputRange: [0, 1],
@@ -81,7 +81,7 @@ export default function AnimatedBackground() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       />
-      
+
       <Animated.View
         style={[
           styles.orb1,
@@ -100,7 +100,7 @@ export default function AnimatedBackground() {
           style={styles.orbGradient}
         />
       </Animated.View>
-      
+
       <Animated.View
         style={[
           styles.orb2,
