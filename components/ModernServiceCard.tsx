@@ -19,7 +19,7 @@ const priorityColors = {
   high: '#FF4500',
 };
 
-const priorityIcons = {
+const priorityIcons: Record<'low' | 'medium' | 'high', keyof typeof Ionicons.glyphMap> = {
   low: 'checkmark-circle',
   medium: 'warning',
   high: 'alert-circle',
@@ -59,19 +59,19 @@ export default function ModernServiceCard({
                   <Ionicons name={priorityIcon} size={24} color="white" />
                 </LinearGradient>
               </View>
-              
+
               <View style={styles.mainContent}>
                 <Text style={styles.title}>{title}</Text>
                 <Text style={styles.description}>{description}</Text>
                 <Text style={styles.vehicle}>{vehicle}</Text>
               </View>
-              
+
               <View style={styles.dateContainer}>
                 <Text style={styles.dueDate}>{dueDate}</Text>
                 <Text style={styles.dueLabel}>DUE</Text>
               </View>
             </View>
-            
+
             <View style={styles.progressBar}>
               <LinearGradient
                 colors={[priorityColor, `${priorityColor}80`, `${priorityColor}40`]}

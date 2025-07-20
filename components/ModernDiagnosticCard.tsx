@@ -19,7 +19,7 @@ const severityColors = {
   high: '#FF4500',
 };
 
-const severityIcons = {
+const severityIcons: Record<'low' | 'medium' | 'high', keyof typeof Ionicons.glyphMap> = {
   low: 'information-circle',
   medium: 'warning',
   high: 'alert-circle',
@@ -59,7 +59,7 @@ export default function ModernDiagnosticCard({
                   <Ionicons name={severityIcon} size={24} color="white" />
                 </LinearGradient>
               </View>
-              
+
               <View style={styles.mainContent}>
                 <View style={styles.codeContainer}>
                   <Text style={styles.code}>{code}</Text>
@@ -71,7 +71,7 @@ export default function ModernDiagnosticCard({
                 <Text style={styles.vehicle}>{vehicle}</Text>
               </View>
             </View>
-            
+
             <View style={styles.footer}>
               <Text style={styles.dateDetected}>DETECTED: {dateDetected}</Text>
               <View style={styles.statusIndicator}>
@@ -79,7 +79,7 @@ export default function ModernDiagnosticCard({
                 <Ionicons name="chevron-forward" size={16} color="#FF8C00" />
               </View>
             </View>
-            
+
             <View style={styles.diagnosticBar}>
               <LinearGradient
                 colors={[severityColor, `${severityColor}80`, `${severityColor}40`]}
