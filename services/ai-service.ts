@@ -5,7 +5,7 @@
  * Phase 2+ implementation
  */
 
-import { AIRequest, AIResponse, RAGSource, SearchQuery, SearchResult } from '../types';
+import { AIRequest, AIResponse, SearchQuery, SearchResult } from '../types';
 
 // Placeholder for OpenAI client (to be implemented in Phase 2)
 // import OpenAI from 'openai';
