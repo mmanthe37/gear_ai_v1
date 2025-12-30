@@ -142,22 +142,6 @@ function getMockDTCAnalysis(code: string): DTCAnalysis {
 }
 
 /**
- * Map CarMD urgency code to internal severity level
- */
-function mapUrgencyLevel(urgencyCode: number): 'low' | 'medium' | 'high' | 'critical' {
-  switch (urgencyCode) {
-    case 1:
-      return 'critical'; // Immediate attention required
-    case 2:
-      return 'high'; // Soon
-    case 3:
-      return 'medium'; // Not urgent
-    default:
-      return 'low';
-  }
-}
-
-/**
  * Connect to OBD-II adapter via Bluetooth
  * Phase 2+ implementation
  */
