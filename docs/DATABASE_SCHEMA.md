@@ -153,7 +153,7 @@ CREATE TABLE public.vector_embeddings (
   parent_chunk_id UUID REFERENCES public.vector_embeddings(embedding_id),
   page_number INT,
   section_title VARCHAR(255),
-  embedding vector(768), -- e5-base-v2 dimension
+  embedding vector(1536), -- text-embedding-3-small dimension
   token_count INT,
   chunk_type VARCHAR(50) CHECK (chunk_type IN ('parent', 'child')) DEFAULT 'child',
   created_at TIMESTAMP DEFAULT NOW(),
