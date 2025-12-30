@@ -394,6 +394,12 @@ GRANT ALL ON ALL TABLES IN SCHEMA public TO authenticated;
 GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO authenticated;
 GRANT ALL ON ALL FUNCTIONS IN SCHEMA public TO authenticated;
 
+-- Lock down audit_log so it is not broadly accessible to authenticated/anon clients
+ALTER TABLE public.audit_log ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.audit_log FROM authenticated, anon;
+
+-- Allow only trusted backend/admin role to manage audit_log
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.audit_log TO service_role;
 -- Grant read-only access to anonymous users for manuals
 GRANT SELECT ON public.manuals TO anon;
 
