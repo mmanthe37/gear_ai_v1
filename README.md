@@ -1,50 +1,311 @@
-# Welcome to your Expo app 👋
+# Gear AI CoPilot 🚗🤖
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+> Your intelligent automotive ownership assistant - powered by AI, telematics, and real-time market data.
 
-## Get started
+**Gear AI CoPilot** is a comprehensive mobile application that consolidates fragmented automotive tools into a single, intelligent "Digital Twin" for your vehicle. From VIN decoding and owner's manual RAG chat to OBD-II diagnostics and real-time valuation, Gear AI transforms how you manage, maintain, and understand your vehicle.
 
-1. Install dependencies
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![React Native](https://img.shields.io/badge/React_Native-0.79-61DAFB?logo=react)](https://reactnative.dev/)
+[![Expo](https://img.shields.io/badge/Expo-~53.0-000020?logo=expo)](https://expo.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)](https://www.typescriptlang.org/)
+[![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase)](https://supabase.com/)
+
+---
+
+## 📋 Table of Contents
+
+- [Features](#-features)
+- [Technology Stack](#-technology-stack)
+- [Getting Started](#-getting-started)
+- [Project Structure](#-project-structure)
+- [Documentation](#-documentation)
+- [Subscription Tiers](#-subscription-tiers)
+- [Roadmap](#-roadmap)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## ✨ Features
+
+### Current (Phase 1 - MVP)
+
+- ✅ **Vehicle Management**: Add vehicles via VIN entry with NHTSA decoding
+- ✅ **Liquid Glass UI**: Premium glassmorphism design system
+- ✅ **Owner's Manuals**: Browse and access vehicle manuals
+- ✅ **AI Chat Assistant**: Conversational AI for automotive questions
+- ✅ **Maintenance Tracking**: Log service history with cost tracking
+- ✅ **Multi-Vehicle Support**: Manage multiple vehicles (tier-based limits)
+- ✅ **Diagnostic Dashboard**: View diagnostic trouble codes (DTCs)
+
+### Coming Soon (Phase 2-3)
+
+- 🔜 **RAG-Powered Manual Chat**: Ask specific questions, get manual-backed answers
+- 🔜 **OBD-II Diagnostics**: Real-time vehicle health via Bluetooth ELM327 adapter
+- 🔜 **Visual Damage Detection**: AI-powered damage assessment from photos
+- 🔜 **Real-Time Valuation**: Market value tracking with depreciation analysis
+- 🔜 **Loan & Lease Tracker**: Financial optimization tools
+
+### Future (Phase 4+)
+
+- 🚀 **Marketplace Integration**: Sell directly to AutoTrader, CarGurus
+- 🚀 **Predictive Maintenance**: ML-based failure prediction
+- 🚀 **Fleet Management**: Business dashboard for dealers and fleets
+
+See [ROADMAP.md](docs/ROADMAP.md) for detailed phase planning.
+
+---
+
+## 🛠️ Technology Stack
+
+### Frontend
+- **Framework**: React Native 0.79 with Expo SDK 53
+- **Language**: TypeScript 5.8
+- **Navigation**: Expo Router (file-based routing)
+- **UI Components**: Custom "Liquid Glass" design system
+- **Styling**: Expo Linear Gradient, Expo Blur
+
+### Backend
+- **BaaS**: Supabase (PostgreSQL 15 + pgvector)
+- **Auth**: Firebase Auth (synced with Supabase)
+- **Serverless**: Supabase Edge Functions (Deno runtime)
+- **Storage**: Supabase Storage (for photos, manuals)
+
+### AI/ML
+- **LLM**: OpenAI GPT-4 for conversational AI
+- **Embeddings**: intfloat/e5-base-v2 (768 dimensions)
+- **Vector Search**: pgvector with ivfflat indexing
+- **Computer Vision**: YOLOv8 (planned for damage detection)
+
+### Third-Party APIs
+- **VIN Decoding**: NHTSA vPIC
+- **Diagnostics**: CarMD
+- **Valuation**: MarketCheck, Black Book
+- **Parts**: SEMA Data (ACES/PIES)
+- **Payments**: Stripe Connect
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 18+ and npm
+- iOS Simulator (macOS) or Android Studio (for emulator)
+- Expo Go app (for physical device testing)
+- Supabase account (for backend)
+- Firebase account (for authentication)
+
+### Installation
+
+1. **Clone the repository**
+
+   ```bash
+   git clone https://github.com/mmanthe37/gear_ai_v1.git
+   cd gear_ai_v1
+   ```
+
+2. **Install dependencies**
 
    ```bash
    npm install
    ```
 
-2. Start the app
+3. **Set up environment variables**
+
+   Create a `.env.local` file in the root directory:
 
    ```bash
+   # Firebase
+   FIREBASE_API_KEY=your_firebase_api_key
+   FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+   FIREBASE_PROJECT_ID=your_project_id
+
+   # Supabase
+   SUPABASE_URL=https://your-project.supabase.co
+   SUPABASE_ANON_KEY=your_anon_key
+   SUPABASE_SERVICE_KEY=your_service_key
+
+   # OpenAI (optional for Phase 2)
+   OPENAI_API_KEY=sk-...
+
+   # Stripe (optional for subscriptions)
+   STRIPE_PUBLISHABLE_KEY=pk_test_...
+   STRIPE_SECRET_KEY=sk_test_...
+   ```
+
+4. **Start the development server**
+
+   ```bash
+   npm start
+   # or
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+5. **Run on a device**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   - Press `i` for iOS simulator
+   - Press `a` for Android emulator
+   - Scan QR code with Expo Go app (iOS/Android)
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+### Running on Web
 
 ```bash
-npm run reset-project
+npm run web
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Building for Production
 
-## Learn more
+```bash
+# iOS
+npm run ios
 
-To learn more about developing your project with Expo, look at the following resources:
+# Android
+npm run android
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+# Web
+npm run build
+```
 
-## Join the community
+---
 
-Join our community of developers creating universal apps.
+## 📁 Project Structure
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+```
+gear_ai_v1/
+├── app/                      # Expo Router pages
+│   ├── (tabs)/              # Tab navigation screens
+│   │   ├── index.tsx        # Garage/Home screen
+│   │   ├── diagnostics.tsx  # Diagnostics screen
+│   │   ├── maintenance.tsx  # Maintenance screen
+│   │   └── manuals.tsx      # Manuals screen
+│   ├── chat/                # AI chat interface
+│   │   └── [id].tsx         # Dynamic chat per vehicle
+│   ├── _layout.tsx          # Root layout
+│   └── index.tsx            # Entry redirect
+├── components/              # Reusable UI components
+│   ├── GlassCard.tsx        # Glassmorphism card component
+│   ├── ModernVehicleCard.tsx
+│   ├── ModernDiagnosticCard.tsx
+│   ├── ModernServiceCard.tsx
+│   ├── ModernStatsCard.tsx
+│   ├── ChatBubble.tsx
+│   ├── AddVehicleModal.tsx
+│   └── AnimatedBackground.tsx
+├── services/                # API integration services (to be created)
+│   ├── vin-decoder.ts       # NHTSA VIN decoding
+│   ├── ai-service.ts        # OpenAI integration
+│   ├── diagnostic-service.ts # CarMD integration
+│   └── valuation-service.ts # MarketCheck/Black Book
+├── types/                   # TypeScript type definitions (to be created)
+│   ├── vehicle.ts
+│   ├── diagnostic.ts
+│   └── maintenance.ts
+├── supabase/                # Supabase configuration
+│   └── migrations/          # Database migrations
+├── docs/                    # Comprehensive documentation
+│   ├── ARCHITECTURE.md      # System architecture
+│   ├── DATABASE_SCHEMA.md   # Database design
+│   ├── API_INTEGRATION.md   # Third-party APIs
+│   ├── DESIGN_SYSTEM.md     # UI/UX guidelines
+│   ├── SECURITY.md          # Security & compliance
+│   └── ROADMAP.md           # Product roadmap
+├── assets/                  # Images, fonts, icons
+├── .gitignore
+├── package.json
+├── tsconfig.json
+├── app.json                 # Expo configuration
+└── README.md
+```
+
+---
+
+## 📚 Documentation
+
+For detailed technical documentation, see:
+
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design, technology stack, feature modules
+- **[DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)** - Complete database schema with RLS policies
+- **[API_INTEGRATION.md](docs/API_INTEGRATION.md)** - Third-party API specifications and implementation
+- **[DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** - "Liquid Glass" UI design guidelines
+- **[SECURITY.md](docs/SECURITY.md)** - Security architecture and compliance (GDPR, CCPA)
+- **[ROADMAP.md](docs/ROADMAP.md)** - Development phases and feature timeline
+
+---
+
+## 💰 Subscription Tiers
+
+| Feature | Free | Pro ($9.99/mo) | Mechanic ($19.99/mo) | Dealer ($99.99/mo) |
+|---------|------|----------------|---------------------|-------------------|
+| Vehicles | 1 | 3 | Unlimited | Unlimited |
+| VIN Entry | ✅ | ✅ | ✅ | ✅ |
+| OCR VIN Scan | ❌ | ✅ | ✅ | ✅ |
+| Manual Access | ✅ | ✅ | ✅ | ✅ |
+| Basic AI Chat | ✅ | ✅ | ✅ | ✅ |
+| RAG Manual Chat | ❌ | ✅ | ✅ | ✅ |
+| OBD-II Diagnostics | ❌ | ❌ | ✅ | ✅ |
+| Damage Detection | ❌ | ❌ | ✅ | ✅ |
+| Valuation Tracking | ❌ | ✅ | ✅ | ✅ |
+| Marketplace Tools | ❌ | ❌ | ✅ | ✅ |
+| Web Dashboard | ❌ | ❌ | ❌ | ✅ |
+| API Access | ❌ | ❌ | ❌ | ✅ |
+
+---
+
+## 🗺️ Roadmap
+
+- **Q1 2025**: MVP Launch (Phase 1) - Auth, Vehicle Management, Basic AI Chat
+- **Q2 2025**: RAG & Diagnostics (Phase 2) - Manual RAG, OBD-II integration
+- **Q3 2025**: Visual Intelligence (Phase 3) - Damage detection, Valuation API
+- **Q4 2025**: Marketplace (Phase 4) - Peer-to-peer sales, Shop network
+- **Q1 2026**: Fleet Management (Phase 5) - Business dashboard, API access
+- **2026+**: Predictive ML, Global expansion, AR features
+
+See [ROADMAP.md](docs/ROADMAP.md) for detailed feature planning.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Code Standards
+
+- Use TypeScript strict mode
+- Follow the existing code style (Prettier + ESLint)
+- Write descriptive commit messages (Conventional Commits)
+- Add tests for new features (when applicable)
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **NHTSA** - Free VIN decoding API
+- **Supabase** - Backend infrastructure
+- **OpenAI** - GPT-4 and embeddings
+- **Expo** - React Native development platform
+- Inspired by modern automotive digital dashboards and AI-first design
+
+---
+
+## 📞 Contact
+
+- **Project Maintainer**: [@mmanthe37](https://github.com/mmanthe37)
+- **Email**: support@gearai.app (planned)
+- **Issues**: [GitHub Issues](https://github.com/mmanthe37/gear_ai_v1/issues)
+
+---
+
+**Built with ❤️ for automotive enthusiasts and everyday drivers alike.**
