@@ -268,7 +268,7 @@ CREATE TABLE public.financial_accounts (
   vehicle_id UUID REFERENCES public.vehicles(vehicle_id) ON DELETE CASCADE NOT NULL,
   type VARCHAR(20) CHECK (type IN ('loan', 'lease', 'cash')) NOT NULL,
   lender_name VARCHAR(100),
-  account_number VARCHAR(100),
+  account_number BYTEA,
   start_date DATE NOT NULL,
   end_date DATE,
   term_months INT,
