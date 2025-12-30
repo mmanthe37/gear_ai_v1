@@ -158,18 +158,6 @@ function mapUrgencyLevel(urgencyCode: number): 'low' | 'medium' | 'high' | 'crit
 }
 
 /**
- * Estimate repair difficulty based on labor cost
- */
-function estimateRepairDifficulty(
-  laborCost: number
-): 'easy' | 'moderate' | 'difficult' | 'professional' {
-  if (laborCost < 100) return 'easy';
-  if (laborCost < 300) return 'moderate';
-  if (laborCost < 600) return 'difficult';
-  return 'professional';
-}
-
-/**
  * Connect to OBD-II adapter via Bluetooth
  * Phase 2+ implementation
  */
