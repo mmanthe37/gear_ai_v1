@@ -17,7 +17,7 @@ CREATE TABLE public.users (
   email VARCHAR(255) UNIQUE NOT NULL,
   display_name VARCHAR(255),
   avatar_url TEXT,
-  tier VARCHAR(20) CHECK (tier IN ('free', 'pro', 'dealer')) DEFAULT 'free',
+  tier VARCHAR(20) CHECK (tier IN ('free', 'pro', 'mechanic', 'dealer')) DEFAULT 'free',
   stripe_customer_id VARCHAR(255),
   subscription_status VARCHAR(50) CHECK (subscription_status IN ('active', 'canceled', 'past_due', 'trialing', 'none')) DEFAULT 'none',
   subscription_period_end TIMESTAMP,
