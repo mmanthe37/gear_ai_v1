@@ -4,12 +4,15 @@
  * Data models for loan/lease tracking and vehicle valuation
  */
 
+// Type alias for encrypted strings (base64-encoded BYTEA from database)
+export type EncryptedString = string;
+
 export interface FinancialAccount {
   account_id: string;
   vehicle_id: string;
   type: 'loan' | 'lease' | 'cash';
   lender_name?: string;
-  account_number_encrypted?: string; // Stored encrypted
+  account_number_encrypted?: EncryptedString; // Base64-encoded encrypted data from pgcrypto
   encryption_key_id?: string;
   start_date: string; // ISO date string
   end_date?: string; // ISO date string

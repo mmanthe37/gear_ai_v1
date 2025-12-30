@@ -48,7 +48,9 @@ export async function decodeVIN(
 function isValidVIN(vin: string): boolean {
   if (vin.length !== 17) return false;
   if (/[IOQ]/i.test(vin)) return false; // VINs cannot contain I, O, or Q
-  return true;
+  
+  // Validate check digit using ISO 3779 standard
+  return validateVINChecksum(vin);
 }
 
 /**

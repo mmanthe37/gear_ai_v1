@@ -51,30 +51,22 @@ CREATE POLICY "Service role can insert users"
 -- Users can view their own vehicles
 CREATE POLICY "Users can view their own vehicles"
   ON public.vehicles FOR SELECT
-  USING (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  USING (user_id = get_authenticated_user_id());
 
 -- Users can insert vehicles (with tier-based limits enforced at app level)
 CREATE POLICY "Users can insert their own vehicles"
   ON public.vehicles FOR INSERT
-  WITH CHECK (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  WITH CHECK (user_id = get_authenticated_user_id());
 
 -- Users can update their own vehicles
 CREATE POLICY "Users can update their own vehicles"
   ON public.vehicles FOR UPDATE
-  USING (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  USING (user_id = get_authenticated_user_id());
 
 -- Users can delete their own vehicles
 CREATE POLICY "Users can delete their own vehicles"
   ON public.vehicles FOR DELETE
-  USING (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  USING (user_id = get_authenticated_user_id());
 
 -- ============================================================================
 -- MAINTENANCE RECORDS POLICIES
@@ -215,30 +207,22 @@ CREATE POLICY "Users can delete their diagnostic codes"
 -- Users can view their own chat sessions
 CREATE POLICY "Users can view their own chat sessions"
   ON public.chat_sessions FOR SELECT
-  USING (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  USING (user_id = get_authenticated_user_id());
 
 -- Users can insert their own chat sessions
 CREATE POLICY "Users can insert their own chat sessions"
   ON public.chat_sessions FOR INSERT
-  WITH CHECK (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  WITH CHECK (user_id = get_authenticated_user_id());
 
 -- Users can update their own chat sessions
 CREATE POLICY "Users can update their own chat sessions"
   ON public.chat_sessions FOR UPDATE
-  USING (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  USING (user_id = get_authenticated_user_id());
 
 -- Users can delete their own chat sessions
 CREATE POLICY "Users can delete their own chat sessions"
   ON public.chat_sessions FOR DELETE
-  USING (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  USING (user_id = get_authenticated_user_id());
 
 -- ============================================================================
 -- CHAT MESSAGES POLICIES
@@ -328,9 +312,7 @@ ALTER TABLE public.api_requests ENABLE ROW LEVEL SECURITY;
 -- Users can view their own API request history
 CREATE POLICY "Users can view their own API requests"
   ON public.api_requests FOR SELECT
-  USING (
-    user_id = (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid())
-  );
+  USING (user_id = get_authenticated_user_id());
 
 -- Service role can insert API request logs
 CREATE POLICY "Service role can log API requests"
@@ -348,6 +330,15 @@ CREATE POLICY "Service role can cleanup old API requests"
 -- ============================================================================
 -- HELPER FUNCTIONS FOR RLS
 -- ============================================================================
+
+-- Function to get user_id from authenticated user's firebase_uid
+-- This improves performance by caching the result and makes RLS policies more readable
+CREATE OR REPLACE FUNCTION get_authenticated_user_id()
+RETURNS UUID AS $$
+BEGIN
+  RETURN (SELECT user_id FROM public.users WHERE firebase_uid = auth.uid());
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER STABLE;
 
 -- Function to check if user owns a vehicle
 CREATE OR REPLACE FUNCTION user_owns_vehicle(p_vehicle_id UUID)
