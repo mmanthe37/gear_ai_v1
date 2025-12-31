@@ -138,12 +138,13 @@ async function checkAPI(): Promise<ServiceStatus> {
   }
 }
 
+// Track application start time
+const APP_START_TIME = Date.now();
+
 /**
  * Get overall health status
  */
 export async function getHealthStatus(): Promise<HealthStatus> {
-  const startTime = performance.now();
-
   const [database, auth, storage, api] = await Promise.all([
     checkDatabase(),
     checkAuth(),
@@ -171,7 +172,7 @@ export async function getHealthStatus(): Promise<HealthStatus> {
     timestamp: new Date().toISOString(),
     version: '1.0.0',
     services,
-    uptime: performance.now() - startTime,
+    uptime: Date.now() - APP_START_TIME,
   };
 }
 

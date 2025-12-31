@@ -34,6 +34,13 @@ const RECOMMENDED_VARS = [
 function validateEnvironment(env = 'development') {
   console.log('🔍 Validating environment variables...\n');
 
+  // Validate environment value
+  const validEnvs = ['development', 'production'];
+  if (!validEnvs.includes(env)) {
+    console.log(`⚠ Warning: Unknown environment '${env}', using 'development' requirements`);
+    env = 'development';
+  }
+
   const required = REQUIRED_VARS[env] || REQUIRED_VARS.development;
   const missing = [];
   const present = [];

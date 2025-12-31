@@ -40,22 +40,9 @@
       ]
     }
   ],
-  "redirects": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "(?<host>.*)"
-        }
-      ],
-      "destination": "/index.html",
-      "permanent": false
-    }
-  ],
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/:path*",
       "destination": "/index.html"
     }
   ]

@@ -89,8 +89,16 @@ class ErrorBoundary extends Component<Props, State> {
               style={[styles.button, styles.secondaryButton]} 
               onPress={() => {
                 // Navigate to home or reload app
-                if (typeof window !== 'undefined') {
-                  window.location.href = '/';
+                // For React Native, this should use navigation
+                // For web, this uses window.location
+                try {
+                  if (typeof window !== 'undefined' && window.location) {
+                    window.location.href = '/';
+                  }
+                } catch (error) {
+                  // In React Native environment, window may not exist
+                  // App should provide navigation prop for proper navigation
+                  console.warn('Navigation not available in this environment');
                 }
               }}
             >
