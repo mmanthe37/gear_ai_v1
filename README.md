@@ -156,16 +156,142 @@ npm run web
 
 ### Building for Production
 
+#### Web Deployment
+
+The app can be deployed to various hosting platforms:
+
+**Vercel (Recommended)**
 ```bash
-# iOS
-npm run ios
+# Install Vercel CLI
+npm install -g vercel
 
-# Android
-npm run android
-
-# Web
-npm run build
+# Deploy
+vercel --prod
 ```
+
+Configuration file included: `vercel.json`
+
+**Netlify**
+```bash
+# Install Netlify CLI
+npm install -g netlify-cli
+
+# Deploy
+netlify deploy --prod
+```
+
+Configuration file included: `netlify.toml`
+
+**Manual Build**
+```bash
+# Build for web
+npm run build
+
+# Output directory: dist/
+# Deploy dist/ to any static hosting service
+```
+
+#### Mobile Builds
+
+For production mobile builds, use Expo Application Services (EAS):
+
+```bash
+# Install EAS CLI
+npm install -g eas-cli
+
+# Login to your Expo account
+eas login
+
+# Configure EAS (first time only)
+eas build:configure
+
+# Build for iOS
+eas build --platform ios --profile production
+
+# Build for Android
+eas build --platform android --profile production
+
+# Submit to app stores
+eas submit --platform ios
+eas submit --platform android
+```
+
+Configuration file included: `eas.json`
+
+See [BUILD_DEPLOYMENT.md](docs/BUILD_DEPLOYMENT.md) and [DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md) for detailed instructions.
+
+---
+
+## 🚢 Deployment Guide
+
+### Prerequisites
+
+Before deploying, ensure you have:
+
+- [ ] All environment variables configured
+- [ ] Firebase production project set up
+- [ ] Supabase production project set up
+- [ ] Domain name (optional but recommended)
+- [ ] SSL certificate (handled by hosting provider)
+
+### Quick Deploy to Vercel
+
+1. **Fork and clone the repository**
+
+2. **Configure environment variables** in Vercel dashboard:
+   - `FIREBASE_API_KEY`
+   - `FIREBASE_AUTH_DOMAIN`
+   - `FIREBASE_PROJECT_ID`
+   - `SUPABASE_URL`
+   - `SUPABASE_ANON_KEY`
+
+3. **Connect repository** to Vercel:
+   ```bash
+   vercel link
+   vercel --prod
+   ```
+
+4. **Set up custom domain** (optional):
+   - Go to Vercel dashboard → Settings → Domains
+   - Add your custom domain
+
+### Environment Setup
+
+Create a `.env.production` file with your production credentials:
+
+```env
+NODE_ENV=production
+FIREBASE_API_KEY=your_production_key
+SUPABASE_URL=https://your-prod-project.supabase.co
+# See .env.production template for all variables
+```
+
+### Database Migration
+
+Run migrations on your production Supabase instance:
+
+1. Go to Supabase Dashboard → SQL Editor
+2. Run `supabase/migrations/20250101000000_initial_schema.sql`
+3. Run `supabase/migrations/20250101000001_rls_policies.sql`
+
+### Health Checks
+
+Access health status endpoint:
+```
+GET /api/health
+```
+
+Returns system status and service availability.
+
+### Monitoring
+
+Configure monitoring services:
+
+- **Error Tracking**: Sentry
+- **Analytics**: Mixpanel or Google Analytics
+- **Uptime Monitoring**: UptimeRobot or Pingdom
+
+See [DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md) for complete checklist.
 
 ---
 
