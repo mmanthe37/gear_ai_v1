@@ -12,6 +12,7 @@ import {
   setPersistence
 } from 'firebase/auth';
 import Constants from 'expo-constants';
+import { Platform } from 'react-native';
 
 // Firebase configuration from environment variables
 const firebaseConfig = {
@@ -56,10 +57,12 @@ try {
   // Initialize Auth
   auth = getAuth(firebaseApp);
   
-  // Set persistence for web/cross-platform compatibility
-  setPersistence(auth, browserLocalPersistence).catch((error) => {
-    console.warn('Auth persistence setup warning:', error);
-  });
+  // Set persistence for web platform only
+  if (Platform.OS === 'web') {
+    setPersistence(auth, browserLocalPersistence).catch((error) => {
+      console.warn('Auth persistence setup warning:', error);
+    });
+  }
 } catch (error) {
   console.error('❌ Firebase initialization error:', error);
   // Initialize with default app to prevent crashes

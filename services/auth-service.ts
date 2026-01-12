@@ -85,6 +85,12 @@ export async function signUp(signUpData: SignUpData): Promise<{ firebaseUser: Fi
     const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
 
+    // Update display name if provided
+    if (display_name) {
+      const { updateProfile } = await import('firebase/auth');
+      await updateProfile(firebaseUser, { displayName: display_name });
+    }
+
     // Sync to Supabase
     const supabaseUser = await syncUserToSupabase(firebaseUser);
 

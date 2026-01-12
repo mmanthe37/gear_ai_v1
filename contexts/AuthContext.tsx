@@ -46,7 +46,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (fbUser) {
         // User is signed in, fetch/sync Supabase user data
         const supabaseUser = await authService.syncUserToSupabase(fbUser);
-        setUser(supabaseUser);
+        if (supabaseUser) {
+          setUser(supabaseUser);
+        } else {
+          // If Supabase sync fails, keep firebaseUser but log warning
+          console.warn('Failed to sync user to Supabase, but Firebase auth is active');
+          setUser(null);
+        }
       } else {
         // User is signed out
         setUser(null);
