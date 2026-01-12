@@ -7,11 +7,10 @@
 import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
 import { 
   getAuth, 
-  initializeAuth,
-  getReactNativePersistence,
-  Auth
+  Auth,
+  browserLocalPersistence,
+  setPersistence
 } from 'firebase/auth';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 
 // Firebase configuration from environment variables
@@ -54,15 +53,13 @@ try {
     console.log('✅ Firebase already initialized');
   }
 
-  // Initialize Auth with React Native persistence
-  try {
-    auth = initializeAuth(firebaseApp, {
-      persistence: getReactNativePersistence(AsyncStorage)
-    });
-  } catch (error) {
-    // If auth is already initialized, just get it
-    auth = getAuth(firebaseApp);
-  }
+  // Initialize Auth
+  auth = getAuth(firebaseApp);
+  
+  // Set persistence for web/cross-platform compatibility
+  setPersistence(auth, browserLocalPersistence).catch((error) => {
+    console.warn('Auth persistence setup warning:', error);
+  });
 } catch (error) {
   console.error('❌ Firebase initialization error:', error);
   // Initialize with default app to prevent crashes

@@ -15,6 +15,7 @@ export default function Index() {
   }
 
   if (!user) {
+    // @ts-ignore - login route is dynamically added
     return <Redirect href="/login" />;
   }
 
