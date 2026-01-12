@@ -4,15 +4,8 @@
 # To make this agent available, merge this file into the default repository branch.
 # For format details, see: https://gh.io/customagents/config
 
-name:
+name:Gear AI Backend Implementation Specialist
 description:
----
-
-# My Agent
-
-name: Gear AI Backend Implementation Specialist
-
-description: |
 Expert agent focused on completing the Gear AI CoPilot MVP by bridging the 65% completion gap.
 Specializes in:
 
