@@ -211,7 +211,6 @@ jobs:
       
       - name: Build iOS (Preview)
         run: eas build --platform ios --profile preview --non-interactive
-        if: secrets.EXPO_TOKEN != ''
         continue-on-error: true
 
   # Job 7: Mobile Build Check (Android)
@@ -245,7 +244,6 @@ jobs:
       
       - name: Build Android (Preview)
         run: eas build --platform android --profile preview --non-interactive
-        if: secrets.EXPO_TOKEN != ''
         continue-on-error: true
 
   # Job 8: Lighthouse Performance Check
