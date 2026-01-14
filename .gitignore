@@ -4,72 +4,132 @@
 expo-env.d.ts
 # @end expo-cli
 
-# Dependencies
-node_modules/
-.pnp
-.pnp.js
-
-# Testing
-coverage/
-*.lcov
-
-# Production builds
-dist/
-build/
-.expo/
-.expo-shared/
-
-# Environment variables
+# ============================================
+# ENVIRONMENT VARIABLES - NEVER COMMIT!
+# ============================================
 .env
 .env.local
+.env.development
 .env.development.local
+.env.staging
 .env.test.local
+.env.production
 .env.production.local
+.env.*.local
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Logs
+# ============================================
+# NODE / NPM / PACKAGE MANAGERS
+# ============================================
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
+.npm
+.eslintcache
+.pnp
+.pnp.js
 
-# OS
+# ============================================
+# EXPO
+# ============================================
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# ============================================
+# BUILD OUTPUTS
+# ============================================
+build/
+coverage/
+*.lcov
+
+# ============================================
+# iOS DEVELOPMENT - CRITICAL
+# ============================================
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+*.moved-aside
+DerivedData
+*.hmap
+*.ipa
+*.xcuserstate
+ios/.xcode.env.local
+
+# iOS Provisioning & Certificates
+*.mobileprovision
+*.p12
+*.p8
+*.pem
+*.key
+
+# ============================================
+# ANDROID DEVELOPMENT
+# ============================================
+*.apk
+*.aab
+*.ap_
+*.dex
+local.properties
+.gradle/
+
+# ============================================
+# OPERATING SYSTEM
+# ============================================
 .DS_Store
 Thumbs.db
+*~
 
-# Temporary files
+# ============================================
+# IDE / EDITORS
+# ============================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ============================================
+# DEPLOYMENT PLATFORMS
+# ============================================
+.netlify
+.vercel
+
+# ============================================
+# TYPESCRIPT
+# ============================================
+*.tsbuildinfo
+
+# ============================================
+# TEMPORARY / CACHE
+# ============================================
 *.tmp
 *.temp
 .cache/
-
-# Debug
 *.log
 *.map
 
-# Local Netlify folder
-.netlify
-
-# Vercel
-.vercel
-
-# TypeScript
-*.tsbuildinfo
-
-# Optional npm cache directory
-.npm
-
-# Optional eslint cache
-.eslintcache
-
-# Secrets
-*.pem
-*.key
+# ============================================
+# GEAR AI SPECIFIC - SENSITIVE FILES
+# ============================================
+api-key-repo.docx
+Api key repo.pdf
+*secret*.json
+*credentials*.json
+Google OAuth client secret.json
 secrets/
+
+# ============================================
+# TESTING
+# ============================================
+coverage/
+
