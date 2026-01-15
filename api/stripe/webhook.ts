@@ -10,7 +10,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+  apiVersion: '2025-12-15.clover',
 });
 
 // Initialize Supabase client
@@ -147,7 +147,9 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
 
   // Map Stripe status to our status
   let subscriptionStatus: string;
-  if (subscription.trial_end && new Date(subscription.trial_end * 1000) > new Date()) {
+  const sub = subscription as any; // Type assertion for compatibility
+  const trialEndTimestamp = sub.trial_end ? Number(sub.trial_end) : null;
+  if (trialEndTimestamp && new Date(trialEndTimestamp * 1000) > new Date()) {
     subscriptionStatus = 'trialing';
   } else if (status === 'active') {
     subscriptionStatus = 'active';
@@ -159,15 +161,24 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
     subscriptionStatus = 'none';
   }
 
+  const currentPeriodEnd = sub.current_period_end 
+    ? Number(sub.current_period_end) 
+    : Date.now() / 1000;
+
   // Update user tier and subscription status
   await supabase
     .from('users')
     .update({
       tier,
       subscription_status: subscriptionStatus,
-      subscription_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      subscription_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
     })
     .eq('user_id', userId);
+
+  const currentPeriodStart = sub.current_period_start 
+    ? Number(sub.current_period_start) 
+    : Date.now() / 1000;
+  const trialStart = sub.trial_start ? Number(sub.trial_start) : null;
 
   // Upsert subscription record
   await supabase
@@ -178,14 +189,14 @@ async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
       stripe_customer_id: subscription.customer as string,
       status: subscriptionStatus,
       price_id: priceId,
-      current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-      current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-      cancel_at_period_end: subscription.cancel_at_period_end,
-      trial_start: subscription.trial_start 
-        ? new Date(subscription.trial_start * 1000).toISOString() 
+      current_period_start: new Date(currentPeriodStart * 1000).toISOString(),
+      current_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
+      cancel_at_period_end: sub.cancel_at_period_end || false,
+      trial_start: trialStart 
+        ? new Date(trialStart * 1000).toISOString() 
         : null,
-      trial_end: subscription.trial_end 
-        ? new Date(subscription.trial_end * 1000).toISOString() 
+      trial_end: trialEndTimestamp 
+        ? new Date(trialEndTimestamp * 1000).toISOString() 
         : null,
       updated_at: new Date().toISOString(),
     }, {
@@ -207,12 +218,17 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
   }
 
   // Downgrade user to free tier
+  const sub = subscription as any; // Type assertion for compatibility
+  const currentPeriodEnd = sub.current_period_end 
+    ? Number(sub.current_period_end) 
+    : Date.now() / 1000;
+
   await supabase
     .from('users')
     .update({
       tier: 'free',
       subscription_status: 'canceled',
-      subscription_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+      subscription_period_end: new Date(currentPeriodEnd * 1000).toISOString(),
     })
     .eq('user_id', userId);
 
@@ -233,7 +249,10 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
  * Handle successful payment
  */
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.subscription as string;
+  const inv = invoice as any; // Type assertion for compatibility
+  const subscriptionId = inv.subscription 
+    ? (typeof inv.subscription === 'string' ? inv.subscription : inv.subscription.id)
+    : null;
   
   if (!subscriptionId) {
     return;
@@ -247,7 +266,10 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
  * Handle failed payment
  */
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  const subscriptionId = invoice.subscription as string;
+  const inv = invoice as any; // Type assertion for compatibility
+  const subscriptionId = inv.subscription 
+    ? (typeof inv.subscription === 'string' ? inv.subscription : inv.subscription.id)
+    : null;
   
   if (!subscriptionId) {
     return;

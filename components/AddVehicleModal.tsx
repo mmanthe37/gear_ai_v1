@@ -39,7 +39,7 @@ export default function AddVehicleModal({
             text: 'Upgrade', 
             onPress: () => {
               onClose();
-              router.push('/subscription/plans');
+              router.push('/subscription/plans' as any);
             }
           },
         ]
@@ -132,7 +132,7 @@ export default function AddVehicleModal({
               style={styles.upgradeButton}
               onPress={() => {
                 onClose();
-                router.push('/subscription/plans');
+                router.push('/subscription/plans' as any);
               }}
             >
               <Text style={styles.upgradeButtonText}>Upgrade to Add More Vehicles</Text>

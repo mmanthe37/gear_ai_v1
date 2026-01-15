@@ -169,7 +169,7 @@ export default function SubscriptionPlansScreen() {
           <Text style={styles.footerText}>
             All plans include secure payment processing via Stripe
           </Text>
-          <TouchableOpacity onPress={() => router.push('/subscription/manage')}>
+          <TouchableOpacity onPress={() => router.push('/subscription/manage' as any)}>
             <Text style={styles.manageLink}>Manage Subscription →</Text>
           </TouchableOpacity>
         </View>

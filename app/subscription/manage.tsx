@@ -92,7 +92,7 @@ export default function ManageSubscriptionScreen() {
   };
 
   const handleUpgradePlan = () => {
-    router.push('/subscription/plans');
+    router.push('/subscription/plans' as any);
   };
 
   if (loading) {

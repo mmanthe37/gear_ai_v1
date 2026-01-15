@@ -67,7 +67,7 @@ export default function SubscriptionSuccessScreen() {
 
         <TouchableOpacity
           style={styles.manageButton}
-          onPress={() => router.push('/subscription/manage')}
+          onPress={() => router.push('/subscription/manage' as any)}
         >
           <Text style={styles.manageButtonText}>Manage Subscription</Text>
         </TouchableOpacity>

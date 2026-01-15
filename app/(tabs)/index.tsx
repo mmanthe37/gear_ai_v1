@@ -161,7 +161,7 @@ export default function VehiclesScreen() {
                 { text: 'Cancel', style: 'cancel' },
                 { 
                   text: 'Upgrade', 
-                  onPress: () => router.push('/subscription/plans')
+                  onPress: () => router.push('/subscription/plans' as any)
                 },
               ]
             );
