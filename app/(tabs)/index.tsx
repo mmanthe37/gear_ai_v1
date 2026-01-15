@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,6 +7,8 @@ import AnimatedBackground from '../../components/AnimatedBackground';
 import ModernVehicleCard from '../../components/ModernVehicleCard';
 import ModernStatsCard from '../../components/ModernStatsCard';
 import AddVehicleModal from '../../components/AddVehicleModal';
+import { useVehicleLimit } from '../../hooks/useFeatureAccess';
+import { supabase } from '../../lib/supabase';
 
 interface Vehicle {
   id: string;
@@ -23,6 +25,31 @@ export default function VehiclesScreen() {
     { id: '2', make: 'BMW', model: 'M3', year: 2022, mileage: 8500 },
   ]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [userId, setUserId] = useState<string | undefined>();
+
+  // Get user ID on mount
+  useEffect(() => {
+    const loadUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('user_id')
+          .eq('firebase_uid', user.id)
+          .single();
+        if (userData) {
+          setUserId(userData.user_id);
+        }
+      }
+    };
+    loadUser();
+  }, []);
+
+  // Check vehicle limit
+  const { canAdd, limit, tierRequired, currentTier, loading } = useVehicleLimit(
+    userId,
+    vehicles.length
+  );
 
   const handleAddVehicle = (vehicleData: Omit<Vehicle, 'id'>) => {
     const newVehicle: Vehicle = {
@@ -125,7 +152,23 @@ export default function VehiclesScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => setShowAddModal(true)}
+        onPress={() => {
+          if (!canAdd && !loading) {
+            Alert.alert(
+              'Vehicle Limit Reached',
+              `Your ${currentTier} plan allows ${limit} vehicle${typeof limit === 'number' && limit > 1 ? 's' : ''}. Upgrade to ${tierRequired} to add more vehicles.`,
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                  text: 'Upgrade', 
+                  onPress: () => router.push('/subscription/plans')
+                },
+              ]
+            );
+          } else {
+            setShowAddModal(true);
+          }
+        }}
       >
         <LinearGradient
           colors={['#FF4500', '#FF8C00']}
@@ -139,6 +182,10 @@ export default function VehiclesScreen() {
         visible={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={handleAddVehicle}
+        canAdd={canAdd}
+        limit={limit}
+        tierRequired={tierRequired}
+        currentTier={currentTier}
       />
     </View>
   );
