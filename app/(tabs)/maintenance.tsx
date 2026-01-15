@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, Alert, Image, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Modal, TextInput, Alert, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import AnimatedBackground from '../../components/AnimatedBackground';
 import ModernServiceCard from '../../components/ModernServiceCard';
-import { uploadMaintenanceReceipt } from '../../services/storage-service';
 
 interface ServiceReminder {
   id: string;
@@ -62,7 +61,6 @@ export default function MaintenanceScreen() {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [photoUri, setPhotoUri] = useState<string | null>(null);
-    const [uploading, setUploading] = useState(false);
 
     const pickImage = async (useCamera: boolean) => {
       try {
@@ -116,31 +114,9 @@ export default function MaintenanceScreen() {
         return;
       }
 
-      let photoUrl: string | undefined;
-
-      if (photoUri) {
-        setUploading(true);
-        try {
-          const tempRecordId = `temp_${Date.now()}`;
-          photoUrl = await uploadMaintenanceReceipt(tempRecordId, photoUri);
-        } catch (error) {
-          setUploading(false);
-          Alert.alert(
-            'Upload Error',
-            'Failed to upload photo. Would you like to retry or continue without the photo?',
-            [
-              { text: 'Retry', onPress: () => handleSave() },
-              { text: 'Continue Without Photo', onPress: () => {
-                setPhotoUri(null);
-                handleSave();
-              }},
-              { text: 'Cancel', style: 'cancel' },
-            ]
-          );
-          return;
-        }
-        setUploading(false);
-      }
+      // Note: In a production implementation, the maintenance record would be created in the database first
+      // to get a real record_id, then the receipt photo would be uploaded with that ID.
+      // For MVP/demo purposes, we store the photoUri to be uploaded after record creation.
 
       // Add new service
       const newService: ServiceReminder = {
@@ -151,7 +127,7 @@ export default function MaintenanceScreen() {
         priority: 'medium',
         vehicle: 'Toyota Camry 2023',
         completed: false,
-        photoUrl,
+        photoUrl: photoUri || undefined,
       };
 
       setServices([newService, ...services]);
@@ -165,16 +141,12 @@ export default function MaintenanceScreen() {
       <Modal visible={showAddModal} animationType="slide" presentationStyle="pageSheet">
         <View style={styles.modalContainer}>
           <View style={styles.modalHeader}>
-            <TouchableOpacity onPress={() => setShowAddModal(false)} disabled={uploading}>
+            <TouchableOpacity onPress={() => setShowAddModal(false)}>
               <Ionicons name="close" size={24} color="#fff" />
             </TouchableOpacity>
             <Text style={styles.modalTitle}>Add Service Record</Text>
-            <TouchableOpacity onPress={handleSave} disabled={uploading}>
-              {uploading ? (
-                <ActivityIndicator size="small" color="#fff" />
-              ) : (
-                <Text style={styles.modalSaveButton}>Save</Text>
-              )}
+            <TouchableOpacity onPress={handleSave}>
+              <Text style={styles.modalSaveButton}>Save</Text>
             </TouchableOpacity>
           </View>
 
@@ -183,7 +155,6 @@ export default function MaintenanceScreen() {
             <TouchableOpacity 
               style={styles.photoButton} 
               onPress={showImageSourceOptions}
-              disabled={uploading}
             >
               {photoUri ? (
                 <Image source={{ uri: photoUri }} style={styles.photoPreview} />
@@ -198,7 +169,6 @@ export default function MaintenanceScreen() {
               <TouchableOpacity 
                 style={styles.removePhotoButton}
                 onPress={() => setPhotoUri(null)}
-                disabled={uploading}
               >
                 <Text style={styles.removePhotoText}>Remove Photo</Text>
               </TouchableOpacity>
@@ -211,7 +181,6 @@ export default function MaintenanceScreen() {
               onChangeText={setTitle}
               placeholder="e.g., Oil Change"
               placeholderTextColor="rgba(255,255,255,0.5)"
-              editable={!uploading}
             />
 
             <Text style={styles.modalLabel}>Description</Text>
@@ -223,15 +192,7 @@ export default function MaintenanceScreen() {
               placeholderTextColor="rgba(255,255,255,0.5)"
               multiline
               numberOfLines={4}
-              editable={!uploading}
             />
-
-            {uploading && (
-              <View style={styles.uploadingContainer}>
-                <ActivityIndicator size="large" color="#fff" />
-                <Text style={styles.uploadingText}>Uploading receipt...</Text>
-              </View>
-            )}
 
             <View style={{ height: 40 }} />
           </ScrollView>
@@ -514,18 +475,6 @@ const styles = StyleSheet.create({
   removePhotoText: {
     color: '#FF3B30',
     fontSize: 14,
-    fontWeight: '500',
-  },
-  uploadingContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
-    marginTop: 16,
-  },
-  uploadingText: {
-    marginTop: 12,
-    fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
     fontWeight: '500',
   },
   photoViewContainer: {

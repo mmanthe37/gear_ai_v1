@@ -132,7 +132,7 @@ export async function uploadVehiclePhoto(
  * Upload maintenance receipt photo to Supabase Storage
  * @param recordId - ID of the maintenance record
  * @param imageUri - Local URI of the image to upload
- * @returns Public URL of the uploaded image
+ * @returns Private URL (signed URL) of the uploaded image
  */
 export async function uploadMaintenanceReceipt(
   recordId: string,
@@ -170,12 +170,17 @@ export async function uploadMaintenanceReceipt(
       throw new Error(`Failed to upload receipt photo: ${error.message}`);
     }
     
-    // Get public URL
-    const { data: urlData } = supabase.storage
+    // Get signed URL for private bucket (expires in 1 year)
+    const { data: urlData, error: urlError } = await supabase.storage
       .from(MAINTENANCE_RECEIPTS_BUCKET)
-      .getPublicUrl(filename);
+      .createSignedUrl(filename, 31536000); // 1 year in seconds
     
-    return urlData.publicUrl;
+    if (urlError || !urlData) {
+      console.error('[Storage Service] Error getting signed URL:', urlError);
+      throw new Error('Failed to get receipt photo URL');
+    }
+    
+    return urlData.signedUrl;
   } catch (error) {
     console.error('[Storage Service] Error uploading receipt photo:', error);
     throw error;
