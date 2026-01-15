@@ -2,11 +2,12 @@
  * Gear AI CoPilot - Authentication Context
  * 
  * Manages global authentication state and provides auth methods
+ * Supports demo mode when backend is not connected
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { User as FirebaseUser, onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../lib/firebase';
+import { auth, DEMO_MODE } from '../lib/firebase';
 import { User, AuthCredentials, SignUpData } from '../types/user';
 import * as authService from '../services/auth-service';
 
@@ -39,6 +40,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // In demo mode, skip Firebase auth setup
+    if (DEMO_MODE || !auth) {
+      console.log('🚧 Demo mode: Auth disabled, continuing without authentication');
+      setLoading(false);
+      return;
+    }
+
     // Listen for Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setFirebaseUser(fbUser);
@@ -66,6 +74,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, []);
 
   const handleSignIn = async (credentials: AuthCredentials) => {
+    if (DEMO_MODE || !auth) {
+      console.warn('🚧 Demo mode: Sign in not available');
+      throw new Error('Authentication not available in demo mode');
+    }
+
     try {
       setLoading(true);
       const { firebaseUser: fbUser, user: supabaseUser } = await authService.signIn(credentials);
@@ -80,6 +93,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const handleSignUp = async (signUpData: SignUpData) => {
+    if (DEMO_MODE || !auth) {
+      console.warn('🚧 Demo mode: Sign up not available');
+      throw new Error('Authentication not available in demo mode');
+    }
+
     try {
       setLoading(true);
       const { firebaseUser: fbUser, user: supabaseUser } = await authService.signUp(signUpData);
@@ -94,6 +112,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
   };
 
   const handleSignOut = async () => {
+    if (DEMO_MODE || !auth) {
+      console.warn('🚧 Demo mode: Sign out not available');
+      return;
+    }
+
     try {
       setLoading(true);
       await authService.signOut();

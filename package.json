@@ -1,13 +1,17 @@
 {
-  "name": "reactnative_expo_nativewind",
+  "name": "gear-ai-copilot",
   "main": "expo-router/entry",
   "version": "1.0.0",
+  "homepage": "https://mmanthe37.github.io/gear_ai_v1",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "export:web": "expo export --platform web",
+    "tunnel": "expo start --tunnel",
+    "serve": "npx serve dist -l 8080",
     "lint": "expo lint",
     "build": "npx expo export --platform web"
   },
