@@ -39,6 +39,16 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Load stored user data on mount for faster initial render
+    const loadStoredUser = async () => {
+      const storedUser = await authService.getStoredUserData();
+      if (storedUser) {
+        setUser(storedUser);
+      }
+    };
+
+    loadStoredUser();
+
     // Listen for Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setFirebaseUser(fbUser);
@@ -48,6 +58,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         const supabaseUser = await authService.syncUserToSupabase(fbUser);
         if (supabaseUser) {
           setUser(supabaseUser);
+          // Store user data for persistence
+          await authService.storeUserData(supabaseUser);
         } else {
           // If Supabase sync fails, keep firebaseUser but log warning
           console.warn('Failed to sync user to Supabase, but Firebase auth is active');
