@@ -10,6 +10,7 @@ export * from './maintenance';
 export * from './user';
 export * from './chat';
 export * from './financial';
+export * from './database';
 
 // Common utility types
 export interface APIError {
