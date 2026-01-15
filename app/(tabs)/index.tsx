@@ -1,42 +1,107 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import AnimatedBackground from '../../components/AnimatedBackground';
 import ModernVehicleCard from '../../components/ModernVehicleCard';
 import ModernStatsCard from '../../components/ModernStatsCard';
 import AddVehicleModal from '../../components/AddVehicleModal';
-
-interface Vehicle {
-  id: string;
-  make: string;
-  model: string;
-  year: number;
-  vin?: string;
-  mileage?: number;
-}
+import { Vehicle } from '../../types';
+import { 
+  getUserVehicles, 
+  createVehicle, 
+  getCurrentUser,
+  getErrorMessage 
+} from '../../services/database-service';
+import { decodeVIN } from '../../services/vin-decoder';
 
 export default function VehiclesScreen() {
-  const [vehicles, setVehicles] = useState<Vehicle[]>([
-    { id: '1', make: 'Toyota', model: 'Supra', year: 2023, vin: '1HGBH41JXMN109186', mileage: 15000 },
-    { id: '2', make: 'BMW', model: 'M3', year: 2022, mileage: 8500 },
-  ]);
+  const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const handleAddVehicle = (vehicleData: Omit<Vehicle, 'id'>) => {
-    const newVehicle: Vehicle = {
-      ...vehicleData,
-      id: Date.now().toString(),
-    };
-    setVehicles([...vehicles, newVehicle]);
+  // Load vehicles on mount and when screen comes into focus
+  useEffect(() => {
+    loadVehicles();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadVehicles();
+    }, [])
+  );
+
+  const loadVehicles = async () => {
+    try {
+      const user = await getCurrentUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      const fetchedVehicles = await getUserVehicles(user.id);
+      setVehicles(fetchedVehicles);
+    } catch (error) {
+      console.error('Error loading vehicles:', error);
+      Alert.alert('Error', getErrorMessage(error));
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
+
+  const handleAddVehicle = async (vehicleData: { make: string; model: string; year: number; vin?: string }) => {
+    try {
+      const user = await getCurrentUser();
+      if (!user) {
+        Alert.alert('Error', 'You must be logged in to add a vehicle');
+        return;
+      }
+
+      setShowAddModal(false);
+      setLoading(true);
+
+      let vehicleInfo = {
+        make: vehicleData.make,
+        model: vehicleData.model,
+        year: vehicleData.year,
+        vin: vehicleData.vin || `UNKNOWN${Date.now()}`,
+        ...vehicleData,
+      };
+
+      // If VIN is provided, try to decode it for additional details
+      if (vehicleData.vin && vehicleData.vin.length === 17) {
+        try {
+          const decodedData = await decodeVIN(vehicleData.vin, vehicleData.year);
+          if (!decodedData.error_code) {
+            vehicleInfo = {
+              ...vehicleInfo,
+              ...decodedData,
+            };
+          }
+        } catch (vinError) {
+          console.warn('VIN decode failed, using manual data:', vinError);
+        }
+      }
+
+      const newVehicle = await createVehicle(user.id, vehicleInfo);
+      setVehicles([newVehicle, ...vehicles]);
+      Alert.alert('Success', 'Vehicle added successfully');
+    } catch (error) {
+      console.error('Error adding vehicle:', error);
+      Alert.alert('Error', getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVehiclePress = (vehicle: Vehicle) => {
     router.push({
       pathname: '/chat/[id]',
       params: {
-        id: vehicle.id,
+        id: vehicle.vehicle_id,
         make: vehicle.make,
         model: vehicle.model,
         year: vehicle.year.toString(),
@@ -45,9 +110,23 @@ export default function VehiclesScreen() {
   };
 
   const totalVehicles = vehicles.length;
-  const avgMileage = totalVehicles > 0 ? vehicles.reduce((sum, v) => sum + (v.mileage || 0), 0) / totalVehicles : 0;
-  const pendingMaintenance = 3;
-  const activeCodes = 2;
+  const avgMileage = totalVehicles > 0 
+    ? vehicles.reduce((sum, v) => sum + (v.current_mileage || 0), 0) / totalVehicles 
+    : 0;
+  const pendingMaintenance = 3; // TODO: Calculate from actual maintenance records
+  const activeCodes = 2; // TODO: Calculate from actual diagnostic codes
+
+  if (loading && vehicles.length === 0) {
+    return (
+      <View style={styles.container}>
+        <AnimatedBackground />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#FF4500" />
+          <Text style={styles.loadingText}>Loading vehicles...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -102,12 +181,12 @@ export default function VehiclesScreen() {
 
         {vehicles.map((vehicle) => (
           <ModernVehicleCard
-            key={vehicle.id}
+            key={vehicle.vehicle_id}
             make={vehicle.make}
             model={vehicle.model}
             year={vehicle.year}
             vin={vehicle.vin}
-            mileage={vehicle.mileage}
+            mileage={vehicle.current_mileage}
             onPress={() => handleVehiclePress(vehicle)}
           />
         ))}
@@ -147,6 +226,17 @@ export default function VehiclesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   scrollView: {
     flex: 1,

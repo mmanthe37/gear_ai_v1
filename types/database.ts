@@ -1,0 +1,181 @@
+/**
+ * Gear AI CoPilot - Database Type Definitions
+ * 
+ * TypeScript types for Supabase database schema
+ */
+
+export type Database = {
+  public: {
+    Tables: {
+      vehicles: {
+        Row: {
+          vehicle_id: string;
+          user_id: string;
+          vin: string;
+          year: number;
+          make: string;
+          model: string;
+          trim: string | null;
+          engine_displacement_l: number | null;
+          engine_cylinders: number | null;
+          fuel_type: string | null;
+          transmission: string | null;
+          drivetrain: string | null;
+          body_type: string | null;
+          plant_country: string | null;
+          plant_city: string | null;
+          in_service_date: string | null;
+          purchase_date: string | null;
+          purchase_price: number | null;
+          current_market_value: number | null;
+          current_mileage: number | null;
+          profile_image: string | null;
+          color: string | null;
+          license_plate: string | null;
+          manual_id: string | null;
+          created_at: string;
+          updated_at: string;
+          is_active: boolean;
+          metadata: Record<string, any> | null;
+        };
+        Insert: {
+          vehicle_id?: string;
+          user_id: string;
+          vin: string;
+          year: number;
+          make: string;
+          model: string;
+          trim?: string | null;
+          engine_displacement_l?: number | null;
+          engine_cylinders?: number | null;
+          fuel_type?: string | null;
+          transmission?: string | null;
+          drivetrain?: string | null;
+          body_type?: string | null;
+          plant_country?: string | null;
+          plant_city?: string | null;
+          in_service_date?: string | null;
+          purchase_date?: string | null;
+          purchase_price?: number | null;
+          current_market_value?: number | null;
+          current_mileage?: number | null;
+          profile_image?: string | null;
+          color?: string | null;
+          license_plate?: string | null;
+          manual_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          is_active?: boolean;
+          metadata?: Record<string, any> | null;
+        };
+        Update: {
+          vehicle_id?: string;
+          user_id?: string;
+          vin?: string;
+          year?: number;
+          make?: string;
+          model?: string;
+          trim?: string | null;
+          engine_displacement_l?: number | null;
+          engine_cylinders?: number | null;
+          fuel_type?: string | null;
+          transmission?: string | null;
+          drivetrain?: string | null;
+          body_type?: string | null;
+          plant_country?: string | null;
+          plant_city?: string | null;
+          in_service_date?: string | null;
+          purchase_date?: string | null;
+          purchase_price?: number | null;
+          current_market_value?: number | null;
+          current_mileage?: number | null;
+          profile_image?: string | null;
+          color?: string | null;
+          license_plate?: string | null;
+          manual_id?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          is_active?: boolean;
+          metadata?: Record<string, any> | null;
+        };
+      };
+      maintenance_records: {
+        Row: {
+          record_id: string;
+          vehicle_id: string;
+          type: 'routine' | 'repair' | 'modification' | 'diagnostic' | 'inspection';
+          date: string;
+          mileage: number | null;
+          title: string;
+          description: string | null;
+          cost: number | null;
+          labor_cost: number | null;
+          parts_cost: number | null;
+          shop_name: string | null;
+          shop_location: string | null;
+          technician_name: string | null;
+          dtc_codes: string[] | null;
+          parts_replaced: string[] | null;
+          attachment_urls: string[] | null;
+          next_service_date: string | null;
+          next_service_mileage: number | null;
+          warranty_covered: boolean;
+          created_at: string;
+          updated_at: string;
+          metadata: Record<string, any> | null;
+        };
+        Insert: {
+          record_id?: string;
+          vehicle_id: string;
+          type: 'routine' | 'repair' | 'modification' | 'diagnostic' | 'inspection';
+          date: string;
+          mileage?: number | null;
+          title: string;
+          description?: string | null;
+          cost?: number | null;
+          labor_cost?: number | null;
+          parts_cost?: number | null;
+          shop_name?: string | null;
+          shop_location?: string | null;
+          technician_name?: string | null;
+          dtc_codes?: string[] | null;
+          parts_replaced?: string[] | null;
+          attachment_urls?: string[] | null;
+          next_service_date?: string | null;
+          next_service_mileage?: number | null;
+          warranty_covered?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          metadata?: Record<string, any> | null;
+        };
+        Update: {
+          record_id?: string;
+          vehicle_id?: string;
+          type?: 'routine' | 'repair' | 'modification' | 'diagnostic' | 'inspection';
+          date?: string;
+          mileage?: number | null;
+          title?: string;
+          description?: string | null;
+          cost?: number | null;
+          labor_cost?: number | null;
+          parts_cost?: number | null;
+          shop_name?: string | null;
+          shop_location?: string | null;
+          technician_name?: string | null;
+          dtc_codes?: string[] | null;
+          parts_replaced?: string[] | null;
+          attachment_urls?: string[] | null;
+          next_service_date?: string | null;
+          next_service_mileage?: number | null;
+          warranty_covered?: boolean;
+          created_at?: string;
+          updated_at?: string;
+          metadata?: Record<string, any> | null;
+        };
+      };
+    };
+    Views: {};
+    Functions: {};
+    Enums: {};
+  };
+};

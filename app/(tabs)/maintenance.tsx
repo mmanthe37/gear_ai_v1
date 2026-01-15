@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useFocusEffect } from 'expo-router';
 import AnimatedBackground from '../../components/AnimatedBackground';
 import ModernServiceCard from '../../components/ModernServiceCard';
+import { MaintenanceRecord } from '../../types';
+import {
+  getUserVehicles,
+  getVehicleMaintenanceHistory,
+  getCurrentUser,
+  getErrorMessage,
+} from '../../services/database-service';
 
-interface ServiceReminder {
+interface ServiceReminderDisplay {
   id: string;
   title: string;
   description: string;
@@ -17,35 +25,86 @@ interface ServiceReminder {
 
 export default function MaintenanceScreen() {
   const [filter, setFilter] = useState<'all' | 'pending' | 'completed'>('all');
-  const [services] = useState<ServiceReminder[]>([
-    {
-      id: '1',
-      title: 'Oil Change',
-      description: 'Regular engine oil and filter replacement',
-      dueDate: 'Dec 15',
-      priority: 'high',
-      vehicle: 'Toyota Camry 2023',
-      completed: false,
-    },
-    {
-      id: '2',
-      title: 'Tire Rotation',
-      description: 'Rotate tires for even wear',
-      dueDate: 'Jan 10',
-      priority: 'medium',
-      vehicle: 'Honda Civic 2022',
-      completed: false,
-    },
-    {
-      id: '3',
-      title: 'Brake Inspection',
-      description: 'Check brake pads and rotors',
-      dueDate: 'Feb 20',
-      priority: 'low',
-      vehicle: 'Toyota Camry 2023',
-      completed: true,
-    },
-  ]);
+  const [services, setServices] = useState<ServiceReminderDisplay[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadMaintenanceRecords();
+  }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadMaintenanceRecords();
+    }, [])
+  );
+
+  const loadMaintenanceRecords = async () => {
+    try {
+      setLoading(true);
+      const user = await getCurrentUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      // Get all vehicles for the user
+      const vehicles = await getUserVehicles(user.id);
+      
+      // Get maintenance records for all vehicles
+      const allRecords: MaintenanceRecord[] = [];
+      for (const vehicle of vehicles) {
+        const records = await getVehicleMaintenanceHistory(vehicle.vehicle_id);
+        allRecords.push(...records);
+      }
+
+      // Transform to display format
+      const displayRecords: ServiceReminderDisplay[] = allRecords.map((record) => {
+        const vehicle = vehicles.find(v => v.vehicle_id === record.vehicle_id);
+        const vehicleName = vehicle 
+          ? `${vehicle.make} ${vehicle.model} ${vehicle.year}`
+          : 'Unknown Vehicle';
+
+        // Determine if completed (you may want to add a completed field to MaintenanceRecord)
+        const completed = false; // For now, showing all as pending
+
+        // Calculate priority based on next service date
+        let priority: 'low' | 'medium' | 'high' = 'low';
+        if (record.next_service_date) {
+          const daysUntilService = Math.floor(
+            (new Date(record.next_service_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+          );
+          if (daysUntilService < 0) {
+            priority = 'high'; // overdue
+          } else if (daysUntilService < 30) {
+            priority = 'high';
+          } else if (daysUntilService < 60) {
+            priority = 'medium';
+          }
+        }
+
+        const dueDate = record.next_service_date
+          ? new Date(record.next_service_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+          : new Date(record.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+        return {
+          id: record.record_id,
+          title: record.title,
+          description: record.description || `${record.type} service`,
+          dueDate,
+          priority,
+          vehicle: vehicleName,
+          completed,
+        };
+      });
+
+      setServices(displayRecords);
+    } catch (error) {
+      console.error('Error loading maintenance records:', error);
+      Alert.alert('Error', getErrorMessage(error));
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredServices = services.filter(service => {
     if (filter === 'pending') return !service.completed;
@@ -63,6 +122,18 @@ export default function MaintenanceScreen() {
       </Text>
     </TouchableOpacity>
   );
+
+  if (loading && services.length === 0) {
+    return (
+      <View style={styles.container}>
+        <AnimatedBackground />
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#FF4500" />
+          <Text style={styles.loadingText}>Loading maintenance records...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -110,6 +181,17 @@ export default function MaintenanceScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 16,
+    fontSize: 16,
+    color: '#FFFFFF',
+    fontWeight: '600',
   },
   scrollView: {
     flex: 1,
