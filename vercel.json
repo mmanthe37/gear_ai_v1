@@ -10,12 +10,25 @@
     "enabled": true,
     "autoAlias": true
   },
+  "functions": {
+    "api/**/*.ts": {
+      "runtime": "@vercel/node@3"
+    }
+  },
   "env": {
     "FIREBASE_API_KEY": "@firebase_api_key",
     "FIREBASE_AUTH_DOMAIN": "@firebase_auth_domain",
     "FIREBASE_PROJECT_ID": "@firebase_project_id",
     "SUPABASE_URL": "@supabase_url",
-    "SUPABASE_ANON_KEY": "@supabase_anon_key"
+    "SUPABASE_ANON_KEY": "@supabase_anon_key",
+    "SUPABASE_SERVICE_KEY": "@supabase_service_key",
+    "STRIPE_SECRET_KEY": "@stripe_secret_key",
+    "STRIPE_WEBHOOK_SECRET": "@stripe_webhook_secret",
+    "STRIPE_PRICE_PRO_MONTHLY": "@stripe_price_pro_monthly",
+    "STRIPE_PRICE_PRO_YEARLY": "@stripe_price_pro_yearly",
+    "STRIPE_PRICE_PREMIUM_MONTHLY": "@stripe_price_premium_monthly",
+    "STRIPE_PRICE_PREMIUM_YEARLY": "@stripe_price_premium_yearly",
+    "EXPO_PUBLIC_APP_URL": "@expo_public_app_url"
   },
   "headers": [
     {
