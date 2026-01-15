@@ -81,6 +81,11 @@ export async function signUp(signUpData: SignUpData): Promise<{ firebaseUser: Fi
   try {
     const { email, password, display_name } = signUpData;
     
+    // Ensure Firebase Auth is initialized
+    if (!auth) {
+      throw new Error('Firebase Auth not initialized');
+    }
+    
     // Create user in Firebase
     const userCredential: UserCredential = await createUserWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
@@ -108,6 +113,11 @@ export async function signIn(credentials: AuthCredentials): Promise<{ firebaseUs
   try {
     const { email, password } = credentials;
     
+    // Ensure Firebase Auth is initialized
+    if (!auth) {
+      throw new Error('Firebase Auth not initialized');
+    }
+    
     // Sign in with Firebase
     const userCredential: UserCredential = await signInWithEmailAndPassword(auth, email, password);
     const firebaseUser = userCredential.user;
@@ -127,6 +137,11 @@ export async function signIn(credentials: AuthCredentials): Promise<{ firebaseUs
  */
 export async function signOut(): Promise<void> {
   try {
+    // Ensure Firebase Auth is initialized
+    if (!auth) {
+      throw new Error('Firebase Auth not initialized');
+    }
+    
     await firebaseSignOut(auth);
     console.log('✅ User signed out');
   } catch (error: any) {
