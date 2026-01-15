@@ -269,6 +269,9 @@ npm run tunnel
 # Build web version locally
 npm run build        # Output: dist/
 
+# Test the built web version locally
+npm run serve        # Serves dist/ on http://localhost:8080
+
 # Export for all platforms
 npm run export:web   # Web export to dist/
 ```

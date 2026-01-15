@@ -11,6 +11,7 @@
     "web": "expo start --web",
     "export:web": "expo export --platform web",
     "tunnel": "expo start --tunnel",
+    "serve": "npx serve dist -l 8080",
     "lint": "expo lint",
     "build": "npx expo export --platform web"
   },
