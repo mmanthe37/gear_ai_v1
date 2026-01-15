@@ -64,11 +64,8 @@ export default function VehiclesScreen() {
       setLoading(true);
 
       let vehicleInfo = {
-        make: vehicleData.make,
-        model: vehicleData.model,
-        year: vehicleData.year,
-        vin: vehicleData.vin || `UNKNOWN${Date.now()}`,
         ...vehicleData,
+        vin: vehicleData.vin || `UNKNOWN${Date.now()}`,
       };
 
       // If VIN is provided, try to decode it for additional details
