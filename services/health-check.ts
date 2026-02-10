@@ -188,6 +188,16 @@ export function validateEnvironment(): { valid: boolean; missing: string[] } {
     'SUPABASE_ANON_KEY',
   ];
 
+  // Optional but recommended for full functionality
+  const optional = [
+    'OPENAI_API_KEY',
+    'VEHICLE_DATABASES_API_KEY',
+  ];
+  const missingOptional = optional.filter(key => !process.env[key]);
+  if (missingOptional.length > 0) {
+    console.warn('[HealthCheck] Optional env vars not set:', missingOptional.join(', '));
+  }
+
   const missing = required.filter(key => !process.env[key]);
 
   return {
