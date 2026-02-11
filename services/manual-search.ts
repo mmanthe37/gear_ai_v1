@@ -51,15 +51,11 @@ async function bm25Search(
   limit: number = DEFAULT_LIMIT * 2
 ): Promise<ManualSearchResult[]> {
   try {
-    // Build tsquery from the user's query
-    const tsQuery = query
-      .replace(/[^\w\s-]/g, '')
-      .split(/\s+/)
-      .filter((w) => w.length > 1)
-      .map((w) => `'${w}'`)
-      .join(' & ');
-
-    if (!tsQuery) return [];
+    // Sanitize the query for websearch-style text search.
+    // Supabase textSearch with type 'websearch' accepts plain
+    // human-readable queries like "oil change 5W-30" directly.
+    const sanitized = query.replace(/[^\w\s\-./]/g, '').trim();
+    if (!sanitized) return [];
 
     let dbQuery = supabase
       .from('vector_embeddings')
@@ -74,7 +70,7 @@ async function bm25Search(
         manuals!inner(make, model, year)
       `
       )
-      .textSearch('chunk_text', tsQuery, {
+      .textSearch('search_vector', sanitized, {
         type: 'websearch',
         config: 'english',
       })
@@ -84,6 +80,14 @@ async function bm25Search(
       dbQuery = dbQuery.eq('manual_id', manualId);
     }
 
+    // If a vehicle is provided without a manual_id, narrow by make/model/year
+    if (!manualId && vehicle) {
+      dbQuery = dbQuery
+        .eq('manuals.make', vehicle.make)
+        .eq('manuals.model', vehicle.model)
+        .eq('manuals.year', vehicle.year);
+    }
+
     const { data, error } = await dbQuery;
 
     if (error) {
@@ -91,20 +95,23 @@ async function bm25Search(
       return [];
     }
 
-    return (data || []).map((row: any, index: number) => ({
-      chunk_id: row.embedding_id,
-      manual_id: row.manual_id,
-      chunk_text: row.chunk_text,
-      page_number: row.page_number,
-      section_title: row.section_title,
-      score: 1 / (RRF_K + index + 1), // RRF rank score
-      retrieval_method: 'bm25' as const,
-      vehicle: vehicle || {
-        year: row.manuals?.year || 0,
-        make: row.manuals?.make || '',
-        model: row.manuals?.model || '',
-      },
-    }));
+    return (data || []).map((row: any, index: number) => {
+      const manual = row.manuals as { make: string; model: string; year: number } | null;
+      return {
+        chunk_id: row.embedding_id,
+        manual_id: row.manual_id,
+        chunk_text: row.chunk_text,
+        page_number: row.page_number,
+        section_title: row.section_title,
+        score: 1 / (RRF_K + index + 1), // RRF rank score
+        retrieval_method: 'bm25' as const,
+        vehicle: vehicle || {
+          year: manual?.year || 0,
+          make: manual?.make || '',
+          model: manual?.model || '',
+        },
+      };
+    });
   } catch (err) {
     console.warn('[ManualSearch] BM25 search failed:', err);
     return [];
@@ -175,7 +182,7 @@ async function semanticSearchFallback(
   manualId?: string,
   vehicle?: VehicleLookup,
   limit: number = DEFAULT_LIMIT * 2,
-  _similarityThreshold: number = DEFAULT_SIMILARITY_THRESHOLD
+  similarityThreshold: number = DEFAULT_SIMILARITY_THRESHOLD
 ): Promise<ManualSearchResult[]> {
   try {
     let dbQuery = supabase
@@ -187,10 +194,12 @@ async function semanticSearchFallback(
         chunk_text,
         page_number,
         section_title,
+        embedding,
         metadata
       `
       )
-      .limit(limit * 3); // Fetch more, then filter client-side
+      .not('embedding', 'is', null)
+      .limit(limit * 3); // Fetch more, then filter/rank client-side
 
     if (manualId) {
       dbQuery = dbQuery.eq('manual_id', manualId);
@@ -200,25 +209,47 @@ async function semanticSearchFallback(
 
     if (error || !data) return [];
 
-    // Client-side cosine similarity (last resort)
-    const scored = data.map((row: any) => {
-      return {
-        chunk_id: row.embedding_id,
-        manual_id: row.manual_id,
-        chunk_text: row.chunk_text,
-        page_number: row.page_number,
-        section_title: row.section_title,
-        score: 0.5, // Placeholder without embedding comparison
-        retrieval_method: 'semantic' as const,
-        vehicle: vehicle || { year: 0, make: '', model: '' },
-      };
-    });
+    // Client-side cosine similarity ranking
+    const scored = data
+      .map((row: any) => {
+        const embedding: number[] | null = row.embedding;
+        const sim = embedding ? cosineSimilarity(queryEmbedding, embedding) : 0;
+        return {
+          chunk_id: row.embedding_id as string,
+          manual_id: row.manual_id as string,
+          chunk_text: row.chunk_text as string,
+          page_number: row.page_number as number | undefined,
+          section_title: row.section_title as string | undefined,
+          score: sim,
+          retrieval_method: 'semantic' as const,
+          vehicle: vehicle || { year: 0, make: '', model: '' },
+        };
+      })
+      .filter((r) => r.score >= similarityThreshold)
+      .sort((a, b) => b.score - a.score);
 
     return scored.slice(0, limit);
   } catch (err) {
     console.warn('[ManualSearch] Semantic fallback failed:', err);
     return [];
   }
+}
+
+/**
+ * Compute cosine similarity between two vectors.
+ */
+function cosineSimilarity(a: number[], b: number[]): number {
+  if (a.length !== b.length || a.length === 0) return 0;
+  let dot = 0;
+  let magA = 0;
+  let magB = 0;
+  for (let i = 0; i < a.length; i++) {
+    dot += a[i] * b[i];
+    magA += a[i] * a[i];
+    magB += b[i] * b[i];
+  }
+  const denom = Math.sqrt(magA) * Math.sqrt(magB);
+  return denom === 0 ? 0 : dot / denom;
 }
 
 // ---------------------------------------------------------------------------

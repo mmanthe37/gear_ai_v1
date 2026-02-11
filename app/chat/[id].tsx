@@ -93,11 +93,10 @@ export default function ChatScreen() {
         message: text,
         include_rag: true,
         context_type: 'manual',
-        // Vehicle context (picked up by extractVehicleFromRequest)
         vehicle_year: parseInt(year || '0', 10),
         vehicle_make: make || '',
         vehicle_model: model || '',
-      } as any);
+      });
 
       // Replace loading message with actual response
       setMessages((prev) =>

@@ -324,15 +324,13 @@ export async function processManualPDF(
 // ---------------------------------------------------------------------------
 
 function extractVehicleFromRequest(request: AIRequest): VehicleLookup | null {
-  // Check metadata for vehicle info
-  const meta = request as any;
-  if (meta.vehicle_year && meta.vehicle_make && meta.vehicle_model) {
+  if (request.vehicle_year && request.vehicle_make && request.vehicle_model) {
     return {
-      year: meta.vehicle_year,
-      make: meta.vehicle_make,
-      model: meta.vehicle_model,
-      trim: meta.vehicle_trim,
-      vin: meta.vehicle_vin,
+      year: request.vehicle_year,
+      make: request.vehicle_make,
+      model: request.vehicle_model,
+      trim: request.vehicle_trim,
+      vin: request.vehicle_vin,
     };
   }
   return null;

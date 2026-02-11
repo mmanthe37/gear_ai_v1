@@ -138,8 +138,8 @@ export function chunkManualText(
       };
       chunks.push(sectionChunk);
 
-      // Step 3: Split into procedure-level blocks if section is large
-      if (estimateTokens(sectionBlock) > CHUNK_LIMITS.section) {
+      // Step 3: Split into procedure-level blocks if section exceeds procedure limit
+      if (estimateTokens(sectionBlock) > CHUNK_LIMITS.procedure) {
         const procedureBlocks = splitIntoFixedChunks(
           sectionBlock,
           CHUNK_LIMITS.procedure,
@@ -206,10 +206,14 @@ function splitIntoFixedChunks(
     }
 
     chunks.push(text.slice(start, end).trim());
-    start = end - overlapChars;
 
-    // Prevent infinite loop on very small text
-    if (start >= text.length - 10) break;
+    const nextStart = end - overlapChars;
+    // Guarantee forward progress to prevent infinite loops
+    if (nextStart <= start) {
+      start = end;
+    } else {
+      start = nextStart;
+    }
   }
 
   return chunks.filter((c) => c.length > 0);
@@ -565,11 +569,17 @@ function estimatePageCount(text: string): number {
 }
 
 /**
+ * DB-safe processing status values (matches the CHECK constraint
+ * on manuals.processing_status).
+ */
+type DbProcessingStatus = 'pending' | 'processing' | 'completed' | 'failed';
+
+/**
  * Update manual processing status in Supabase.
  */
 async function updateManualStatus(
   manualId: string,
-  status: 'pending' | 'processing' | 'completed' | 'failed'
+  status: DbProcessingStatus
 ): Promise<void> {
   await supabase
     .from('manuals')

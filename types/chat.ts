@@ -54,6 +54,12 @@ export interface AIRequest {
   include_rag?: boolean;
   max_tokens?: number;
   temperature?: number;
+  /** Vehicle context for RAG pipeline */
+  vehicle_year?: number;
+  vehicle_make?: string;
+  vehicle_model?: string;
+  vehicle_trim?: string;
+  vehicle_vin?: string;
 }
 
 export interface AIResponse {
@@ -92,7 +98,7 @@ export interface VectorEmbedding {
   parent_chunk_id?: string;
   page_number?: number;
   section_title?: string;
-  embedding: number[]; // 768-dimensional vector
+  embedding: number[]; // 768-dimensional vector (text-embedding-3-small with dimensions=768)
   token_count?: number;
   chunk_type: 'parent' | 'child';
   created_at: string;
@@ -137,7 +143,7 @@ export const AIModels = {
   },
   EMBEDDING_SMALL: {
     name: 'text-embedding-3-small',
-    dimensions: 1536,
+    dimensions: 768,
     cost_per_1k: 0.00002,
   },
 } as const;
