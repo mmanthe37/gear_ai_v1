@@ -19,6 +19,11 @@ import { User, SignUpData, AuthCredentials } from '../types/user';
  * Create or update user record in Supabase when Firebase user is created/authenticated
  */
 export async function syncUserToSupabase(firebaseUser: FirebaseUser): Promise<User | null> {
+  if (!supabase) {
+    console.warn('Supabase is not initialized. User sync skipped.');
+    return null;
+  }
+
   try {
     const { data: existingUser, error: fetchError } = await supabase
       .from('users')
@@ -78,6 +83,14 @@ export async function syncUserToSupabase(firebaseUser: FirebaseUser): Promise<Us
  * Sign up a new user with email and password
  */
 export async function signUp(signUpData: SignUpData): Promise<{ firebaseUser: FirebaseUser; user: User | null }> {
+  if (!auth) {
+    throw new Error(
+      'Firebase authentication is not initialized. ' +
+      'Ensure FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, and FIREBASE_PROJECT_ID are set in your .env.local file. ' +
+      'See .env.example for required configuration.'
+    );
+  }
+
   try {
     const { email, password, display_name } = signUpData;
     
@@ -105,6 +118,14 @@ export async function signUp(signUpData: SignUpData): Promise<{ firebaseUser: Fi
  * Sign in an existing user with email and password
  */
 export async function signIn(credentials: AuthCredentials): Promise<{ firebaseUser: FirebaseUser; user: User | null }> {
+  if (!auth) {
+    throw new Error(
+      'Firebase authentication is not initialized. ' +
+      'Ensure FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, and FIREBASE_PROJECT_ID are set in your .env.local file. ' +
+      'See .env.example for required configuration.'
+    );
+  }
+
   try {
     const { email, password } = credentials;
     
@@ -126,6 +147,14 @@ export async function signIn(credentials: AuthCredentials): Promise<{ firebaseUs
  * Sign out the current user
  */
 export async function signOut(): Promise<void> {
+  if (!auth) {
+    throw new Error(
+      'Firebase authentication is not initialized. ' +
+      'Ensure FIREBASE_API_KEY, FIREBASE_AUTH_DOMAIN, and FIREBASE_PROJECT_ID are set in your .env.local file. ' +
+      'See .env.example for required configuration.'
+    );
+  }
+
   try {
     await firebaseSignOut(auth);
     console.log('✅ User signed out');
@@ -139,6 +168,11 @@ export async function signOut(): Promise<void> {
  * Get user data from Supabase by Firebase UID
  */
 export async function getUserByFirebaseUid(firebaseUid: string): Promise<User | null> {
+  if (!supabase) {
+    console.warn('Supabase is not initialized. Cannot fetch user data.');
+    return null;
+  }
+
   try {
     const { data, error } = await supabase
       .from('users')

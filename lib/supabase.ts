@@ -12,20 +12,25 @@ const supabaseUrl = process.env.SUPABASE_URL || Constants.expoConfig?.extra?.sup
 const supabaseAnonKey = process.env.SUPABASE_ANON_KEY || Constants.expoConfig?.extra?.supabaseAnonKey || '';
 
 // Validate configuration
-if (!supabaseUrl || !supabaseAnonKey) {
+const hasValidConfig = supabaseUrl && supabaseAnonKey;
+
+if (!hasValidConfig) {
   console.warn(
     'Supabase configuration incomplete.\n' +
     'Please ensure .env.local contains SUPABASE_URL and SUPABASE_ANON_KEY.'
   );
 }
 
-// Create Supabase client
-export const supabase: SupabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    autoRefreshToken: true,
-    persistSession: true,
-    detectSessionInUrl: false,
-  },
-});
+// Create Supabase client only if we have valid configuration
+// Export null if config is missing to prevent confusing runtime errors
+export const supabase: SupabaseClient | null = hasValidConfig 
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    })
+  : null;
 
 export default supabase;

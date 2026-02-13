@@ -35,43 +35,47 @@ const validateConfig = () => {
       `Firebase configuration incomplete. Missing: ${missing.join(', ')}\n` +
       'Please ensure .env.local is properly configured with Firebase credentials.'
     );
+    return false;
   }
+  return true;
 };
 
+// Check if we have valid configuration
+const hasValidConfig = validateConfig();
+
 // Initialize Firebase App
-let firebaseApp: FirebaseApp;
-let auth: Auth;
+let firebaseApp: FirebaseApp | null = null;
+let auth: Auth | null = null;
 
-try {
-  validateConfig();
-  
-  // Check if Firebase is already initialized
-  if (getApps().length === 0) {
-    firebaseApp = initializeApp(firebaseConfig);
-    console.log('✅ Firebase initialized successfully');
-  } else {
-    firebaseApp = getApps()[0];
-    console.log('✅ Firebase already initialized');
-  }
+// Only initialize Firebase if we have valid configuration
+if (hasValidConfig) {
+  try {
+    // Check if Firebase is already initialized
+    if (getApps().length === 0) {
+      firebaseApp = initializeApp(firebaseConfig);
+      console.log('✅ Firebase initialized successfully');
+    } else {
+      firebaseApp = getApps()[0];
+      console.log('✅ Firebase already initialized');
+    }
 
-  // Initialize Auth
-  auth = getAuth(firebaseApp);
-  
-  // Set persistence for web platform only
-  if (Platform.OS === 'web') {
-    setPersistence(auth, browserLocalPersistence).catch((error) => {
-      console.warn('Auth persistence setup warning:', error);
-    });
+    // Initialize Auth
+    auth = getAuth(firebaseApp);
+    
+    // Set persistence for web platform only
+    if (Platform.OS === 'web') {
+      setPersistence(auth, browserLocalPersistence).catch((error) => {
+        console.warn('Auth persistence setup warning:', error);
+      });
+    }
+  } catch (error) {
+    console.error('❌ Firebase initialization error:', error);
+    // Set to null on error to prevent app crashes
+    firebaseApp = null;
+    auth = null;
   }
-} catch (error) {
-  console.error('❌ Firebase initialization error:', error);
-  // Initialize with default app to prevent crashes
-  if (getApps().length === 0) {
-    firebaseApp = initializeApp(firebaseConfig);
-  } else {
-    firebaseApp = getApps()[0];
-  }
-  auth = getAuth(firebaseApp);
+} else {
+  console.warn('⚠️  Firebase not initialized due to missing configuration. Authentication features will be disabled.');
 }
 
 export { firebaseApp, auth };

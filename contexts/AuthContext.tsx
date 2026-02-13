@@ -39,6 +39,13 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // If auth is not initialized (e.g., missing Firebase config), skip auth state monitoring
+    if (!auth) {
+      console.warn('Firebase auth not initialized. Authentication features are disabled.');
+      setLoading(false);
+      return;
+    }
+
     // Listen for Firebase auth state changes
     const unsubscribe = onAuthStateChanged(auth, async (fbUser) => {
       setFirebaseUser(fbUser);
