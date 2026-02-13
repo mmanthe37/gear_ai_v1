@@ -78,6 +78,10 @@ export async function syncUserToSupabase(firebaseUser: FirebaseUser): Promise<Us
  * Sign up a new user with email and password
  */
 export async function signUp(signUpData: SignUpData): Promise<{ firebaseUser: FirebaseUser; user: User | null }> {
+  if (!auth) {
+    throw new Error('Firebase authentication is not initialized. Please check your Firebase configuration.');
+  }
+
   try {
     const { email, password, display_name } = signUpData;
     
@@ -105,6 +109,10 @@ export async function signUp(signUpData: SignUpData): Promise<{ firebaseUser: Fi
  * Sign in an existing user with email and password
  */
 export async function signIn(credentials: AuthCredentials): Promise<{ firebaseUser: FirebaseUser; user: User | null }> {
+  if (!auth) {
+    throw new Error('Firebase authentication is not initialized. Please check your Firebase configuration.');
+  }
+
   try {
     const { email, password } = credentials;
     
@@ -126,6 +134,10 @@ export async function signIn(credentials: AuthCredentials): Promise<{ firebaseUs
  * Sign out the current user
  */
 export async function signOut(): Promise<void> {
+  if (!auth) {
+    throw new Error('Firebase authentication is not initialized. Please check your Firebase configuration.');
+  }
+
   try {
     await firebaseSignOut(auth);
     console.log('✅ User signed out');
