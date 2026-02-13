@@ -22,8 +22,8 @@ if (!hasValidConfig) {
 }
 
 // Create Supabase client only if we have valid configuration
-// Use placeholder values if config is missing to prevent initialization errors during build
-export const supabase: SupabaseClient = hasValidConfig 
+// Export null if config is missing to prevent confusing runtime errors
+export const supabase: SupabaseClient | null = hasValidConfig 
   ? createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         autoRefreshToken: true,
@@ -31,16 +31,6 @@ export const supabase: SupabaseClient = hasValidConfig
         detectSessionInUrl: false,
       },
     })
-  : createClient(
-      'https://placeholder.supabase.co',
-      'placeholder-anon-key',
-      {
-        auth: {
-          autoRefreshToken: false,
-          persistSession: false,
-          detectSessionInUrl: false,
-        },
-      }
-    );
+  : null;
 
 export default supabase;
