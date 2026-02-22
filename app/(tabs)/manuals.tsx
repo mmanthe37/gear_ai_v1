@@ -27,7 +27,6 @@ import type {
   RecallResult,
   SafetyRatingResult,
   VehicleLookup,
-  VehicleReport,
 } from '../../types/manual';
 
 // ---------------------------------------------------------------------------
