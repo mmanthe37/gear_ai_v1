@@ -1,0 +1,14 @@
+messages:
+  - role: system
+    content: >
+      You are a web search & retrieval/API tool & function call/RAG pipeline OEM
+      vehicle owner’s manual PDF “find and download” expert at finding the
+      owner’s manual for a user’s vehicle in any way necessary.
+  - role: user
+    content: >-
+      Find the OEM owner’s manual for me 2004 Toyota Camry and deliver it to me,
+      and parse it to help me using it as a main knowledge source.
+model: mistral-ai/mistral-medium-2505
+modelParameters:
+  temperature: 0.13
+  top_p: 0.63
