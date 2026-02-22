@@ -106,210 +106,47 @@ See [ROADMAP.md](docs/ROADMAP.md) for detailed phase planning.
 
 ## 🚀 Getting Started
 
-### Prerequisites
+> **Important**: Repository has been cleaned and optimized! See [DEPLOYMENT_READY.md](DEPLOYMENT_READY.md) for deployment preparation.
 
-- Node.js 18+ and npm
-- iOS Simulator (macOS) or Android Studio (for emulator)
-- Expo Go app (for physical device testing)
-- Supabase account (for backend)
-- Firebase account (for authentication)
+### Quick Start
 
-### Installation
-
-1. **Clone the repository**
-
+1. **Clone and Install**
    ```bash
    git clone https://github.com/mmanthe37/gear_ai_v1.git
    cd gear_ai_v1
-   ```
-
-2. **Install dependencies**
-
-   ```bash
    npm install
    ```
 
-3. **Set up environment variables**
-
-   Create a `.env.local` file in the root directory:
-
+2. **Configure Environment**
    ```bash
-   # Firebase
-   FIREBASE_API_KEY=your_firebase_api_key
-   FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   FIREBASE_PROJECT_ID=your_project_id
-
-   # Supabase
-   SUPABASE_URL=https://your-project.supabase.co
-   SUPABASE_ANON_KEY=your_anon_key
-   SUPABASE_SERVICE_KEY=your_service_key
-
-   # OpenAI (optional for Phase 2)
-   OPENAI_API_KEY=sk-...
-
-   # Stripe (optional for subscriptions)
-   STRIPE_PUBLISHABLE_KEY=pk_test_...
-   STRIPE_SECRET_KEY=sk_test_...
+   cp .env.example .env.local
+   # Edit .env.local with your Firebase and Supabase credentials
    ```
 
-4. **Start the development server**
-
+3. **Start Development**
    ```bash
    npm start
-   # or
-   npx expo start
+   # Press 'w' for web, 'i' for iOS, 'a' for Android
    ```
 
-5. **Run on a device**
+### Full Setup Guide
 
-   - Press `i` for iOS simulator
-   - Press `a` for Android emulator
-   - Scan QR code with Expo Go app (iOS/Android)
-
-### Running on Web
-
-```bash
-npm run web
-```
-
-### Building for Production
-
-#### Web Deployment
-
-The app can be deployed to various hosting platforms:
-
-**Vercel (Recommended)**
-```bash
-# Install Vercel CLI
-npm install -g vercel
-
-# Deploy
-vercel --prod
-```
-
-Configuration file included: `vercel.json`
-
-**Netlify**
-```bash
-# Install Netlify CLI
-npm install -g netlify-cli
-
-# Deploy
-netlify deploy --prod
-```
-
-Configuration file included: `netlify.toml`
-
-**Manual Build**
-```bash
-# Build for web
-npm run build
-
-# Output directory: dist/
-# Deploy dist/ to any static hosting service
-```
-
-#### Mobile Builds
-
-For production mobile builds, use Expo Application Services (EAS):
-
-```bash
-# Install EAS CLI
-npm install -g eas-cli
-
-# Login to your Expo account
-eas login
-
-# Configure EAS (first time only)
-eas build:configure
-
-# Build for iOS
-eas build --platform ios --profile production
-
-# Build for Android
-eas build --platform android --profile production
-
-# Submit to app stores
-eas submit --platform ios
-eas submit --platform android
-```
-
-Configuration file included: `eas.json`
-
-See [BUILD_DEPLOYMENT.md](docs/BUILD_DEPLOYMENT.md) and [DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md) for detailed instructions.
+For complete installation, configuration, and deployment instructions, see:
+- 📖 **[Quick Start Guide](docs/QUICK_START.md)** - Detailed setup instructions
+- 🚀 **[Deployment Ready Guide](DEPLOYMENT_READY.md)** - Prepare for production deployment
+- 🏗️ **[Build & Deployment](docs/BUILD_DEPLOYMENT.md)** - Comprehensive deployment options
 
 ---
 
-## 🚢 Deployment Guide
+## 📊 Current Status
 
-### Prerequisites
+This repository has been cleaned and refactored:
+- ✅ Removed 250+ lines of dead code
+- ✅ Consolidated documentation (16 → 10 files)
+- ✅ Eliminated redundant dependencies
+- ✅ Ready for environment configuration
 
-Before deploying, ensure you have:
-
-- [ ] All environment variables configured
-- [ ] Firebase production project set up
-- [ ] Supabase production project set up
-- [ ] Domain name (optional but recommended)
-- [ ] SSL certificate (handled by hosting provider)
-
-### Quick Deploy to Vercel
-
-1. **Fork and clone the repository**
-
-2. **Configure environment variables** in Vercel dashboard:
-   - `FIREBASE_API_KEY`
-   - `FIREBASE_AUTH_DOMAIN`
-   - `FIREBASE_PROJECT_ID`
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
-
-3. **Connect repository** to Vercel:
-   ```bash
-   vercel link
-   vercel --prod
-   ```
-
-4. **Set up custom domain** (optional):
-   - Go to Vercel dashboard → Settings → Domains
-   - Add your custom domain
-
-### Environment Setup
-
-Create a `.env.production` file with your production credentials:
-
-```env
-NODE_ENV=production
-FIREBASE_API_KEY=your_production_key
-SUPABASE_URL=https://your-prod-project.supabase.co
-# See .env.production template for all variables
-```
-
-### Database Migration
-
-Run migrations on your production Supabase instance:
-
-1. Go to Supabase Dashboard → SQL Editor
-2. Run `supabase/migrations/20250101000000_initial_schema.sql`
-3. Run `supabase/migrations/20250101000001_rls_policies.sql`
-
-### Health Checks
-
-Access health status endpoint:
-```
-GET /api/health
-```
-
-Returns system status and service availability.
-
-### Monitoring
-
-Configure monitoring services:
-
-- **Error Tracking**: Sentry
-- **Analytics**: Mixpanel or Google Analytics
-- **Uptime Monitoring**: UptimeRobot or Pingdom
-
-See [DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md) for complete checklist.
+See [docs/DEVELOPMENT_STATUS.md](docs/DEVELOPMENT_STATUS.md) for feature completion status.
 
 ---
 
@@ -317,67 +154,53 @@ See [DEPLOYMENT_CHECKLIST.md](docs/DEPLOYMENT_CHECKLIST.md) for complete checkli
 
 ```
 gear_ai_v1/
-├── app/                      # Expo Router pages
-│   ├── (tabs)/              # Tab navigation screens
-│   │   ├── index.tsx        # Garage/Home screen
-│   │   ├── diagnostics.tsx  # Diagnostics screen
-│   │   ├── maintenance.tsx  # Maintenance screen
-│   │   └── manuals.tsx      # Manuals screen
-│   ├── chat/                # AI chat interface
-│   │   └── [id].tsx         # Dynamic chat per vehicle
-│   ├── _layout.tsx          # Root layout
-│   └── index.tsx            # Entry redirect
-├── components/              # Reusable UI components
-│   ├── GlassCard.tsx        # Glassmorphism card component
-│   ├── ModernVehicleCard.tsx
-│   ├── ModernDiagnosticCard.tsx
-│   ├── ModernServiceCard.tsx
-│   ├── ModernStatsCard.tsx
-│   ├── ChatBubble.tsx
-│   ├── AddVehicleModal.tsx
-│   └── AnimatedBackground.tsx
-├── services/                # API integration services (to be created)
-│   ├── vin-decoder.ts       # NHTSA VIN decoding
-│   ├── ai-service.ts        # OpenAI integration
-│   ├── diagnostic-service.ts # CarMD integration
-│   └── valuation-service.ts # MarketCheck/Black Book
-├── types/                   # TypeScript type definitions (to be created)
-│   ├── vehicle.ts
-│   ├── diagnostic.ts
-│   └── maintenance.ts
-├── supabase/                # Supabase configuration
-│   └── migrations/          # Database migrations
-├── docs/                    # Comprehensive documentation
-│   ├── APP_DEVELOPMENT_STAGE_ASSESSMENT.md  # Detailed dev stage analysis
-│   ├── ARCHITECTURE.md      # System architecture
-│   ├── DATABASE_SCHEMA.md   # Database design
-│   ├── API_INTEGRATION.md   # Third-party APIs
-│   ├── DESIGN_SYSTEM.md     # UI/UX guidelines
-│   ├── SECURITY.md          # Security & compliance
-│   ├── ROADMAP.md           # Product roadmap
-│   ├── DEPLOYMENT_READINESS.md  # Deployment assessment
-│   └── ... (more docs)
-├── assets/                  # Images, fonts, icons
-├── DEVELOPMENT_STAGE_SUMMARY.md  # Quick dev stage summary
-├── .gitignore
-├── package.json
-├── tsconfig.json
-├── app.json                 # Expo configuration
-└── README.md
+├── app/                    # Expo Router screens
+│   ├── (tabs)/            # Tab navigation screens
+│   ├── chat/              # Chat conversation screens
+│   ├── _layout.tsx        # Root layout
+│   ├── index.tsx          # Landing/home
+│   └── login.tsx          # Authentication
+├── components/            # Reusable UI components (9 components)
+├── contexts/              # React contexts (Auth)
+├── lib/                   # Third-party integrations
+│   ├── firebase.ts        # Firebase setup
+│   └── supabase.ts        # Supabase client
+├── services/              # Business logic (9 services)
+│   ├── ai-service.ts      # OpenAI integration
+│   ├── auth-service.ts    # Authentication
+│   ├── diagnostic-service.ts
+│   ├── manual-*.ts        # Owner's manual services
+│   ├── rag-pipeline.ts    # Vector search
+│   └── vin-decoder.ts     # NHTSA VIN API
+├── types/                 # TypeScript definitions (8 type files)
+├── docs/                  # Documentation (10 docs)
+├── supabase/             # Database migrations
+└── assets/               # Images, fonts, icons
 ```
-
 ---
 
 ## 📚 Documentation
 
-For detailed technical documentation, see:
+Comprehensive documentation is organized in the `/docs` directory:
 
-- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - System design, technology stack, feature modules
-- **[DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)** - Complete database schema with RLS policies
-- **[API_INTEGRATION.md](docs/API_INTEGRATION.md)** - Third-party API specifications and implementation
-- **[DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** - "Liquid Glass" UI design guidelines
-- **[SECURITY.md](docs/SECURITY.md)** - Security architecture and compliance (GDPR, CCPA)
-- **[ROADMAP.md](docs/ROADMAP.md)** - Development phases and feature timeline
+### Essential Guides
+- 🚀 **[Deployment Ready](DEPLOYMENT_READY.md)** - Prepare for production deployment
+- 📊 **[Development Status](docs/DEVELOPMENT_STATUS.md)** - Current completion status
+- 🏗️ **[Architecture](docs/ARCHITECTURE.md)** - System design and technology stack
+- 📖 **[Quick Start](docs/QUICK_START.md)** - Getting started guide
+
+### Technical Documentation
+- 🗄️ **[Database Schema](docs/DATABASE_SCHEMA.md)** - Supabase database design
+- 🔌 **[API Integration](docs/API_INTEGRATION.md)** - Third-party API specifications
+- 🎨 **[Design System](docs/DESIGN_SYSTEM.md)** - "Liquid Glass" UI guidelines
+- 🔒 **[Security](docs/SECURITY.md)** - Security & compliance (GDPR, CCPA)
+- 🛣️ **[Roadmap](docs/ROADMAP.md)** - Development phases and timeline
+
+### Deployment & Build
+- 🏗️ **[Build & Deployment](docs/BUILD_DEPLOYMENT.md)** - Comprehensive deployment guide
+- 🔐 **[Authentication](docs/AUTHENTICATION.md)** - Firebase Auth setup
+
+---
 
 ---
 
