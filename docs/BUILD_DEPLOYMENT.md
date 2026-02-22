@@ -369,9 +369,68 @@ rm -rf node_modules package-lock.json
 npm install
 ```
 
-## Security Checklist
+## Pre-Deployment Checklist
 
-Before deploying to production:
+### Code Quality
+
+- [ ] All TypeScript errors resolved (`npx tsc --noEmit`)
+- [ ] Linting passes (`npm run lint`)
+- [ ] No console.log statements in production code
+- [ ] All TODO/FIXME comments addressed or tracked in issues
+- [ ] Code has been peer reviewed
+- [ ] Security scan completed (CodeQL or similar)
+
+### Testing
+
+- [ ] All unit tests pass (`npm test`)
+- [ ] Integration tests pass (when implemented)
+- [ ] Manual testing completed on:
+  - [ ] iOS simulator/device
+  - [ ] Android emulator/device
+  - [ ] Web browsers (Chrome, Safari, Firefox)
+- [ ] Accessibility testing completed
+- [ ] Performance testing completed
+
+### Environment Configuration
+
+- [ ] Production environment variables configured
+- [ ] API keys rotated and secured
+- [ ] Database connection strings updated
+- [ ] CORS origins configured correctly
+- [ ] Rate limiting configured
+- [ ] No sensitive data in source code
+- [ ] `.env.production` template up to date
+
+### Database
+
+- [ ] All migrations tested on staging
+- [ ] RLS (Row Level Security) policies enabled
+- [ ] Database indexes optimized
+- [ ] Backup strategy in place
+- [ ] Connection pooling configured
+
+### Third-Party Services
+
+#### Firebase
+- [ ] Production project created
+- [ ] Authentication providers configured
+- [ ] Security rules deployed
+- [ ] Usage limits configured
+
+#### Supabase
+- [ ] Production project created
+- [ ] Migrations applied
+- [ ] RLS policies enabled
+- [ ] Storage buckets configured
+- [ ] API rate limits set
+
+#### Stripe
+- [ ] Production account created
+- [ ] Products and pricing configured
+- [ ] Webhooks configured
+- [ ] Test mode disabled
+
+### Security Checklist
 
 - [ ] All API keys in environment variables (not hardcoded)
 - [ ] `.env.local` in `.gitignore`
@@ -382,6 +441,22 @@ Before deploying to production:
 - [ ] Input validation on all forms
 - [ ] SQL injection prevention (use parameterized queries)
 - [ ] XSS prevention (sanitize user input)
+
+### Legal & Compliance
+
+- [ ] Privacy Policy reviewed and up to date
+- [ ] Terms of Service reviewed and up to date
+- [ ] GDPR compliance verified (if applicable)
+- [ ] CCPA compliance verified (if applicable)
+- [ ] App store guidelines reviewed
+
+### Monitoring & Analytics
+
+- [ ] Error tracking configured (Sentry or similar)
+- [ ] Analytics configured (Mixpanel or similar)
+- [ ] Performance monitoring enabled
+- [ ] Logging configured properly
+- [ ] Alert thresholds configured
 
 ## Performance Benchmarks
 

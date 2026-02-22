@@ -16,7 +16,7 @@
 
 **Current Status**: Mid-to-late Phase 1 development with production-ready infrastructure and UI, but partial backend implementation.
 
-📊 **[View Comprehensive Development Assessment](docs/APP_DEVELOPMENT_STAGE_ASSESSMENT.md)** | **[Quick Summary](DEVELOPMENT_STAGE_SUMMARY.md)**
+📊 **[View Development Status](docs/DEVELOPMENT_STATUS.md)** | **[Comprehensive Assessment](docs/APP_DEVELOPMENT_STAGE_ASSESSMENT.md)**
 
 **Key Highlights**:
 - ✅ Infrastructure: 95% complete (deployment-ready)
