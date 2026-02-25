@@ -1,0 +1,18 @@
+# Gitleaks Configuration
+# This file configures which secrets to detect and which to ignore
+
+title = "Gitleaks Configuration for Gear AI"
+
+# Allowlist specific paths where examples and documentation may contain fake secrets
+[allowlist]
+  description = "Allowlist for documentation examples"
+  
+  # Ignore example secrets in documentation
+  paths = [
+    '''docs/SECURITY\.md''',  # Allow example API keys in security documentation
+  ]
+  
+  # Ignore specific patterns that are just examples
+  regexes = [
+    '''sk-proj-abc123''',  # Example OpenAI API key prefix in docs
+  ]
