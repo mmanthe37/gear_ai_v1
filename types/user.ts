@@ -20,7 +20,7 @@ export interface User {
   preferences?: UserPreferences;
 }
 
-export type SubscriptionTier = 'free' | 'pro' | 'mechanic' | 'dealer';
+export type SubscriptionTier = 'free' | 'pro' | 'premium' | 'dealer';
 
 export type SubscriptionStatus = 
   | 'active'
@@ -28,6 +28,16 @@ export type SubscriptionStatus =
   | 'past_due'
   | 'trialing'
   | 'none';
+
+export interface SubscriptionDetails {
+  subscription_id?: string;
+  stripe_subscription_id?: string;
+  current_period_start?: string;
+  current_period_end?: string;
+  cancel_at_period_end?: boolean;
+  trial_end?: string;
+  trial_start?: string;
+}
 
 export interface UserPreferences {
   notifications_enabled?: boolean;
@@ -98,7 +108,7 @@ export const SubscriptionTiers: Record<SubscriptionTier, SubscriptionTierFeature
     price_monthly: 9.99,
     price_yearly: 99.99,
     features: {
-      max_vehicles: 3,
+      max_vehicles: 5,
       vin_entry: true,
       ocr_vin_scan: true,
       manual_access: true,
@@ -116,9 +126,9 @@ export const SubscriptionTiers: Record<SubscriptionTier, SubscriptionTierFeature
       ai_messages_per_day: 100,
     },
   },
-  mechanic: {
-    tier: 'mechanic',
-    name: 'Mechanic',
+  premium: {
+    tier: 'premium',
+    name: 'Premium',
     price_monthly: 19.99,
     price_yearly: 199.99,
     features: {
