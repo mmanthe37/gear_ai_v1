@@ -1,24 +1,59 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity, Alert } from 'react-native';
+import { useAuth } from '../../contexts/AuthContext';
 
 export default function TabLayout() {
+  const { signOut, user } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Sign Out',
+      'Are you sure you want to sign out?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Sign Out',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await signOut();
+            } catch (error: any) {
+              Alert.alert('Error', error.message || 'Failed to sign out');
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#666',
+        tabBarActiveTintColor: '#1E90FF',
+        tabBarInactiveTintColor: 'rgba(255, 255, 255, 0.5)',
         tabBarStyle: {
-          backgroundColor: '#fff',
+          backgroundColor: '#000',
           borderTopWidth: 1,
-          borderTopColor: '#e0e0e0',
+          borderTopColor: 'rgba(30, 144, 255, 0.3)',
         },
         headerStyle: {
-          backgroundColor: '#007AFF',
+          backgroundColor: '#000',
+          borderBottomWidth: 1,
+          borderBottomColor: 'rgba(30, 144, 255, 0.3)',
         },
         headerTintColor: '#fff',
         headerTitleStyle: {
           fontWeight: '600',
         },
+        headerRight: () => (
+          <TouchableOpacity
+            onPress={handleLogout}
+            style={{ marginRight: 16, padding: 8 }}
+          >
+            <Ionicons name="log-out-outline" size={24} color="#FF4500" />
+          </TouchableOpacity>
+        ),
       }}
     >
       <Tabs.Screen

@@ -8,12 +8,56 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut as firebaseSignOut,
+  sendPasswordResetEmail,
   User as FirebaseUser,
-  UserCredential
+  UserCredential,
+  AuthError,
+  AuthErrorCodes
 } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { auth } from '../lib/firebase';
 import { supabase } from '../lib/supabase';
 import { User, SignUpData, AuthCredentials } from '../types/user';
+
+// Storage keys
+const AUTH_TOKEN_KEY = '@gear_ai_auth_token';
+const USER_DATA_KEY = '@gear_ai_user_data';
+
+/**
+ * Parse Firebase Auth error and return user-friendly message
+ */
+export function getAuthErrorMessage(error: any): string {
+  if (!error || !error.code) {
+    return 'An unexpected error occurred. Please try again.';
+  }
+
+  const errorCode = error.code as string;
+  
+  switch (errorCode) {
+    case AuthErrorCodes.EMAIL_EXISTS:
+      return 'This email is already registered. Please sign in instead.';
+    case AuthErrorCodes.INVALID_EMAIL:
+      return 'Invalid email address. Please check and try again.';
+    case AuthErrorCodes.WEAK_PASSWORD:
+      return 'Password is too weak. Use at least 8 characters with uppercase, lowercase, and numbers.';
+    case AuthErrorCodes.USER_DELETED:
+      return 'No account found with this email. Please sign up.';
+    case AuthErrorCodes.INVALID_PASSWORD:
+    case 'auth/wrong-password':
+      return 'Incorrect password. Please try again.';
+    case AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER:
+      return 'Too many failed attempts. Please try again later.';
+    case AuthErrorCodes.NETWORK_REQUEST_FAILED:
+      return 'Network error. Please check your connection and try again.';
+    case AuthErrorCodes.INVALID_LOGIN_CREDENTIALS:
+    case 'auth/invalid-credential':
+      return 'Invalid email or password. Please check your credentials.';
+    case AuthErrorCodes.USER_DISABLED:
+      return 'This account has been disabled. Please contact support.';
+    default:
+      return error.message || 'Authentication failed. Please try again.';
+  }
+}
 
 /**
  * Create or update user record in Supabase when Firebase user is created/authenticated
@@ -99,10 +143,13 @@ export async function signUp(signUpData: SignUpData): Promise<{ firebaseUser: Fi
     // Sync to Supabase
     const supabaseUser = await syncUserToSupabase(firebaseUser);
 
+    // Store auth token
+    await storeAuthToken(await firebaseUser.getIdToken());
+
     return { firebaseUser, user: supabaseUser };
   } catch (error: any) {
     console.error('Sign up error:', error);
-    throw new Error(error.message || 'Failed to sign up');
+    throw new Error(getAuthErrorMessage(error));
   }
 }
 
@@ -125,10 +172,13 @@ export async function signIn(credentials: AuthCredentials): Promise<{ firebaseUs
     // Sync to Supabase (updates last_login_at)
     const supabaseUser = await syncUserToSupabase(firebaseUser);
 
+    // Store auth token
+    await storeAuthToken(await firebaseUser.getIdToken());
+
     return { firebaseUser, user: supabaseUser };
   } catch (error: any) {
     console.error('Sign in error:', error);
-    throw new Error(error.message || 'Failed to sign in');
+    throw new Error(getAuthErrorMessage(error));
   }
 }
 
@@ -143,10 +193,82 @@ export async function signOut(): Promise<void> {
     }
     
     await firebaseSignOut(auth);
+    await clearAuthData();
     console.log('✅ User signed out');
   } catch (error: any) {
     console.error('Sign out error:', error);
-    throw new Error(error.message || 'Failed to sign out');
+    throw new Error(getAuthErrorMessage(error));
+  }
+}
+
+/**
+ * Send password reset email
+ */
+export async function resetPassword(email: string): Promise<void> {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log('✅ Password reset email sent to:', email);
+  } catch (error: any) {
+    console.error('Password reset error:', error);
+    throw new Error(getAuthErrorMessage(error));
+  }
+}
+
+/**
+ * Store auth token in AsyncStorage
+ */
+async function storeAuthToken(token: string): Promise<void> {
+  try {
+    await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
+  } catch (error) {
+    console.error('Error storing auth token:', error);
+  }
+}
+
+/**
+ * Get stored auth token from AsyncStorage
+ */
+export async function getStoredAuthToken(): Promise<string | null> {
+  try {
+    return await AsyncStorage.getItem(AUTH_TOKEN_KEY);
+  } catch (error) {
+    console.error('Error getting stored auth token:', error);
+    return null;
+  }
+}
+
+/**
+ * Store user data in AsyncStorage
+ */
+export async function storeUserData(user: User): Promise<void> {
+  try {
+    await AsyncStorage.setItem(USER_DATA_KEY, JSON.stringify(user));
+  } catch (error) {
+    console.error('Error storing user data:', error);
+  }
+}
+
+/**
+ * Get stored user data from AsyncStorage
+ */
+export async function getStoredUserData(): Promise<User | null> {
+  try {
+    const data = await AsyncStorage.getItem(USER_DATA_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch (error) {
+    console.error('Error getting stored user data:', error);
+    return null;
+  }
+}
+
+/**
+ * Clear all auth data from AsyncStorage
+ */
+async function clearAuthData(): Promise<void> {
+  try {
+    await AsyncStorage.multiRemove([AUTH_TOKEN_KEY, USER_DATA_KEY]);
+  } catch (error) {
+    console.error('Error clearing auth data:', error);
   }
 }
 
