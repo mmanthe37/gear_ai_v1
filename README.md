@@ -9,6 +9,40 @@
 [![Expo](https://img.shields.io/badge/Expo-~53.0-000020?logo=expo)](https://expo.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.8-3178C6?logo=typescript)](https://www.typescriptlang.org/)
 [![Supabase](https://img.shields.io/badge/Supabase-Backend-3ECF8E?logo=supabase)](https://supabase.com/)
+[![Deploy to GitHub Pages](https://github.com/mmanthe37/gear_ai_v1/actions/workflows/deploy-web.yml/badge.svg)](https://github.com/mmanthe37/gear_ai_v1/actions/workflows/deploy-web.yml)
+
+---
+
+## 🚀 Live Demo
+
+**Try it now!** Experience the Gear AI CoPilot UI and test the VIN decoder:
+
+### 🌐 Web Version (GitHub Pages)
+**[👉 Launch Live Demo](https://mmanthe37.github.io/gear_ai_v1/)** 
+
+- ✅ No installation required
+- ✅ Works in any modern browser
+- ✅ Real VIN decoder API (NHTSA)
+- ⚠️ Using mock data for other features (backend in development)
+
+### 📱 iOS Simulator (Full Native Experience)
+
+For developers and testers who want the complete mobile experience:
+
+```bash
+# Clone and install
+git clone https://github.com/mmanthe37/gear_ai_v1.git
+cd gear_ai_v1
+npm install
+
+# Launch in iOS simulator
+npm start
+# Then press 'i' for iOS simulator
+```
+
+**📖 [Complete Testing Guide](QUICK_START_TESTING.md)** - Detailed setup instructions for both web and iOS
+
+**📋 [Test Checklist](TEST_CHECKLIST.md)** - Systematic testing guide for QA
 
 ---
 
